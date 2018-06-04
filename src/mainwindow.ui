@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>521</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ScriptSDCC</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="ProjectsTabs">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="ProjectTab1">
+       <attribute name="title">
+        <string>Project</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="ProjNew">
+            <property name="text">
+             <string>New</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="ProjOpen">
+            <property name="text">
+             <string>Open</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="ProjSave">
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="ProjSaveAs">
+            <property name="text">
+             <string>Save as</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="ProjListAdd">
+            <property name="text">
+             <string>Add to list</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="ProjListRem">
+            <property name="text">
+             <string>Rem from list</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="DescrL">
+            <property name="text">
+             <string>Description:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0" rowspan="2">
+           <widget class="QLabel" name="CommandL">
+            <property name="text">
+             <string>Compile command:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" rowspan="2" colspan="2">
+           <widget class="QLineEdit" name="CommandT">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QPushButton" name="CompileSchemeAdd">
+            <property name="text">
+             <string>Add/Modify scheme</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="2">
+           <widget class="QPlainTextEdit" name="DescrT"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="FileNameT1">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QComboBox" name="EngineT1">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>MCS51</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Z180</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="FileNameL">
+            <property name="text">
+             <string>Source and binary file name:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QComboBox" name="CompileSchemeT">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="CompileSchemeL">
+            <property name="text">
+             <string>Compile scheme:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="MemDataL">
+            <property name="text">
+             <string>Data memory loc/size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLineEdit" name="MemCodeT1">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="MemCodeL">
+            <property name="text">
+             <string>Code memory loc/size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLineEdit" name="FileNameT2">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="EngineL">
+            <property name="text">
+             <string>Engine type and memory:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="2">
+           <widget class="QLineEdit" name="MemDataT2">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QLineEdit" name="MemDataT1">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QLineEdit" name="MemSwapT">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QComboBox" name="EngineT2">
+            <item>
+             <property name="text">
+              <string>Common CODE/DATA</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Separated CODE/DATA</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="9" column="2">
+           <widget class="QLineEdit" name="MemCodeT2">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="QLabel" name="MemSwapL">
+            <property name="text">
+             <string>Swap memory location:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="QLineEdit" name="LibraryT"/>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="CompileSchemeRem">
+            <property name="text">
+             <string>Remove scheme</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="LibraryL">
+            <property name="text">
+             <string>Library files:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ViewCommandL">
+            <property name="text">
+             <string>View/Edit command:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="ViewCommandT"/>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="ViewCommandB">
+            <property name="text">
+             <string>View/Edit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QComboBox" name="ProjListT">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ProjectTab2">
+       <attribute name="title">
+        <string>Compile and run</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="CompileMsgL">
+            <property name="text">
+             <string>Compile messages:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPlainTextEdit" name="CompileMsgT">
+            <property name="lineWrapMode">
+             <enum>QPlainTextEdit::NoWrap</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ProgStatusL">
+            <property name="text">
+             <string>Script status:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="ProgStatusT">
+            <property name="text">
+             <string>Unknown</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="ProgInstrT">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="ProgInstrL">
+            <property name="text">
+             <string>Total instructions:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="ProgIpsL">
+            <property name="text">
+             <string>Instructions/second:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="ProgIpsT">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ProjectTab3">
+       <attribute name="title">
+        <string>Memory map</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="1">
+           <widget class="QScrollBar" name="MemMapVScroll">
+            <property name="maximum">
+             <number>255</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QMouseLabel" name="MemMap">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QScrollBar" name="MemMapHScroll">
+            <property name="maximum">
+             <number>255</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="MemMapDispCode">
+            <property name="text">
+             <string>CODE</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MemMapDispData">
+            <property name="text">
+             <string>DATA</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MemMapHoriI">
+            <property name="text">
+             <string>H+</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MemMapHoriO">
+            <property name="text">
+             <string>H-</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MemMapVertI">
+            <property name="text">
+             <string>V+</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MemMapVertO">
+            <property name="text">
+             <string>V-</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ProjectTab4">
+       <attribute name="title">
+        <string>Settings</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="SetLibDirT"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="SetLibDirL">
+          <property name="text">
+           <string>Library directory:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QSpinBox" name="SetTimerT">
+          <property name="minimum">
+           <number>100</number>
+          </property>
+          <property name="maximum">
+           <number>2000</number>
+          </property>
+          <property name="singleStep">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="SetTimerL">
+          <property name="text">
+           <string>Timer interval:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="SetTempDirL">
+          <property name="text">
+           <string>Temporary directory:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="SetTempDirT"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="SetProgCommandL">
+          <property name="text">
+           <string>SDCC command:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="SetProgCommandT"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="BtnCompile">
+        <property name="text">
+         <string>Compile</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnReset">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnRun">
+        <property name="text">
+         <string>Run</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnAbort">
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="BtnConsole">
+        <property name="text">
+         <string>Console</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnSpreadsheet">
+        <property name="text">
+         <string>Spreadsheet</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnGraph">
+        <property name="text">
+         <string>Graph</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QMouseLabel</class>
+   <extends>QLabel</extends>
+   <header>qmouselabel.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>ProjectsTabs</tabstop>
+  <tabstop>ProjListT</tabstop>
+  <tabstop>ProjNew</tabstop>
+  <tabstop>ProjOpen</tabstop>
+  <tabstop>ProjSave</tabstop>
+  <tabstop>ProjSaveAs</tabstop>
+  <tabstop>ProjListAdd</tabstop>
+  <tabstop>ProjListRem</tabstop>
+  <tabstop>DescrT</tabstop>
+  <tabstop>ViewCommandT</tabstop>
+  <tabstop>ViewCommandB</tabstop>
+  <tabstop>FileNameT1</tabstop>
+  <tabstop>FileNameT2</tabstop>
+  <tabstop>LibraryT</tabstop>
+  <tabstop>CompileSchemeT</tabstop>
+  <tabstop>CompileSchemeAdd</tabstop>
+  <tabstop>CompileSchemeRem</tabstop>
+  <tabstop>EngineT1</tabstop>
+  <tabstop>EngineT2</tabstop>
+  <tabstop>CommandT</tabstop>
+  <tabstop>MemCodeT1</tabstop>
+  <tabstop>MemCodeT2</tabstop>
+  <tabstop>MemDataT1</tabstop>
+  <tabstop>MemDataT2</tabstop>
+  <tabstop>MemSwapT</tabstop>
+  <tabstop>CompileMsgT</tabstop>
+  <tabstop>MemMapDispCode</tabstop>
+  <tabstop>MemMapDispData</tabstop>
+  <tabstop>MemMapHoriI</tabstop>
+  <tabstop>MemMapHoriO</tabstop>
+  <tabstop>MemMapVertI</tabstop>
+  <tabstop>MemMapVertO</tabstop>
+  <tabstop>SetLibDirT</tabstop>
+  <tabstop>SetTempDirT</tabstop>
+  <tabstop>SetTimerT</tabstop>
+  <tabstop>BtnCompile</tabstop>
+  <tabstop>BtnReset</tabstop>
+  <tabstop>BtnRun</tabstop>
+  <tabstop>BtnAbort</tabstop>
+  <tabstop>BtnConsole</tabstop>
+  <tabstop>BtnSpreadsheet</tabstop>
+  <tabstop>BtnGraph</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
