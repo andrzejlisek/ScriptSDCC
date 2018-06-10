@@ -9,6 +9,8 @@
 #include "scriptmachinez180.h"
 #include "eden.h"
 
+#define ProjFileExt "sdc"
+
 using namespace std;
 
 class AppCore
@@ -22,6 +24,12 @@ public:
     void ProgAbort();
     void ProgReset();
     ScriptMachine * SM = NULL;
+
+    string ConsoleFontName = "Courier New";
+    int ConsoleFontSize = 12;
+    string SpreadsheetFontName = "Courier New";
+    int SpreadsheetFontSize = 12;
+
 
     string LibDir = "";
     string TempDir = "";
@@ -53,10 +61,13 @@ public:
     int DataLoc = 0;
     int DataSize = 0;
 
+    string CurrentFileName = "";
+
 private:
     bool FileCopy(string SrcFile, string DstDir);
     void ClearTemp();
     void SysRun(string Cmd);
+    string GetFilePath(string FileName);
     string GetFileName(string FileName);
 };
 

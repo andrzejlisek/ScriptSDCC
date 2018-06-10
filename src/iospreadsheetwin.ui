@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>581</width>
     <height>300</height>
    </rect>
   </property>
@@ -101,12 +101,6 @@
    </item>
    <item row="2" column="0">
     <widget class="QTableWidget" name="SpreadsheetScreen">
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ContiguousSelection</enum>
      </property>

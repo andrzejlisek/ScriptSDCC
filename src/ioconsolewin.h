@@ -20,6 +20,7 @@ public:
     explicit IOConsoleWin(QWidget *parent = 0);
     ~IOConsoleWin();
     AppCore * Core;
+    void SetDispFont();
     void Refresh();
 
 private slots:

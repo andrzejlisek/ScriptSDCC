@@ -88,13 +88,22 @@ void IOGraphWin::DrawPoint(int X, int Y, int Z, uchar R, uchar G, uchar B)
     {
         int Pos = (DrawY * ImgW) + DrawX;
         int XX, YY, PosX, Pos4X;
-        for (YY = 0 - PlotSizeP; YY <= PlotSizeP; YY++)
+        for (YY = 0; YY <= PlotSizeP; YY++)
         {
-            for (XX = 0 - PlotSizeP; XX <= PlotSizeP; XX++)
+            for (XX = 0; XX <= PlotSizeP; XX++)
             {
-                if (Mask[Abs(XX)][Abs(YY)])
+                if (Mask[XX][YY])
                 {
-                    PosX = Pos + (ImgW * YY) + XX;
+                    PosX = Pos + (ImgW * (YY)) + XX;
+                    if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
+
+                    PosX = Pos + (ImgW * (YY)) - XX - PlotSizeP2;
+                    if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
+
+                    PosX = Pos - (ImgW * (YY + PlotSizeP2)) + XX;
+                    if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
+
+                    PosX = Pos - (ImgW * (YY + PlotSizeP2)) - XX - PlotSizeP2;
                     if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
                 }
             }
@@ -112,7 +121,7 @@ void IOGraphWin::DrawPointH(int X, int Y, int Z, uchar R, uchar G, uchar B)
     {
         int Pos = (DrawY * ImgW) + DrawX;
         int XX, PosX, Pos4X;
-        for (XX = 0 - PlotSizeL; XX <= PlotSizeL; XX++)
+        for (XX = 0 - PlotSizeL - PlotSizeL2; XX <= PlotSizeL; XX++)
         {
             PosX = Pos + XX;
             if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
@@ -130,7 +139,7 @@ void IOGraphWin::DrawPointV(int X, int Y, int Z, uchar R, uchar G, uchar B)
     {
         int Pos = (DrawY * ImgW) + DrawX;
         int YY, PosX, Pos4X;
-        for (YY = 0 - PlotSizeL; YY <= PlotSizeL; YY++)
+        for (YY = 0 - PlotSizeL - PlotSizeL2; YY <= PlotSizeL; YY++)
         {
             PosX = Pos + (ImgW * YY);
             if (ImgZ[PosX] <= DrawZ) { ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = B; ImgRaw[Pos4X + 1] = G; ImgRaw[Pos4X + 2] = R; }
@@ -381,12 +390,12 @@ void IOGraphWin::Refresh()
 
                 ImgW1 = ImgW - 1;
                 ImgH1 = ImgH - 1;
-                BoundLP = PlotSizeP;
-                BoundTP = PlotSizeP;
+                BoundLP = PlotSizeP + PlotSizeP2;
+                BoundTP = PlotSizeP + PlotSizeP2;
                 BoundRP = ImgW1 - PlotSizeP;
                 BoundBP = ImgH1 - PlotSizeP;
-                BoundLL = PlotSizeL;
-                BoundTL = PlotSizeL;
+                BoundLL = PlotSizeL + PlotSizeL2;
+                BoundTL = PlotSizeL + PlotSizeL2;
                 BoundRL = ImgW1 - PlotSizeL;
                 BoundBL = ImgH1 - PlotSizeL;
 
@@ -497,13 +506,30 @@ void IOGraphWin::on_GrOffset2Z_textChanged(const QString &arg1) { RefreshParams(
 
 void IOGraphWin::RefreshParams()
 {
-    PlotSizeP = ui->GraphPlotSizeP->value();
-    PlotSizeL = ui->GraphPlotSizeL->value();
-    for (int YY = 0; YY <= MaxPlotWidth; YY++)
+    PlotSizeP = ui->GraphPlotSizeP->value() - 1;
+    PlotSizeP2 = PlotSizeP & 1;
+    PlotSizeP = PlotSizeP >> 1;
+    PlotSizeL = ui->GraphPlotSizeL->value() - 1;
+    PlotSizeL2 = PlotSizeL & 1;
+    PlotSizeL = PlotSizeL >> 1;
+    if (PlotSizeP >= 0)
     {
-        for (int XX = 0; XX <= MaxPlotWidth; XX++)
+        for (int YY = 0; YY <= MaxPlotWidth; YY++)
         {
-            Mask[XX][YY] = MaskAll[PlotSizeP][XX][YY];
+            for (int XX = 0; XX <= MaxPlotWidth; XX++)
+            {
+                Mask[XX][YY] = MaskAll[PlotSizeP][XX][YY];
+            }
+        }
+    }
+    else
+    {
+        for (int YY = 0; YY <= MaxPlotWidth; YY++)
+        {
+            for (int XX = 0; XX <= MaxPlotWidth; XX++)
+            {
+                Mask[XX][YY] = 0;
+            }
         }
     }
 

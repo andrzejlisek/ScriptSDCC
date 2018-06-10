@@ -13,6 +13,7 @@ IOConsoleWin::IOConsoleWin(QWidget *parent) :
     flags |= Qt::WindowMinimizeButtonHint;
     setWindowFlags(flags);
     ui->setupUi(this);
+
     connect(ui->ConsoleScreen, SIGNAL(KeyPress(QKeyEvent*)), this, SLOT(KeyPress(QKeyEvent*)));
     connect(ui->ConsoleScreen, SIGNAL(KeyRelease(QKeyEvent*)), this, SLOT(KeyRelease(QKeyEvent*)));
 }
@@ -54,6 +55,11 @@ void IOConsoleWin::on_Show3_clicked()
     CurrentIOX = -1;
     CurrentIO = 3;
     Refresh();
+}
+
+void IOConsoleWin::SetDispFont()
+{
+    ui->ConsoleScreen->setFont(QFont(Eden::ToQStr(Core->ConsoleFontName), Core->ConsoleFontSize, 0, false));
 }
 
 void IOConsoleWin::Refresh()

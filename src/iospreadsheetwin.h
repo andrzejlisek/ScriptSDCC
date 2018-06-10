@@ -22,6 +22,7 @@ public:
     explicit IOSpreadsheetWin(QWidget *parent = 0);
     ~IOSpreadsheetWin();
     AppCore * Core;
+    void SetDispFont();
     void Refresh();
     void RefreshVal(int N, int R, int C);
 

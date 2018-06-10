@@ -502,6 +502,51 @@ QString Eden::CorrectDir(QString D)
 }
 
 
+///
+/// \brief Eden::FileExtension - Checks, if file name contains specified extension
+/// \param FileName
+/// \param FileExt
+/// \return
+///
+string Eden::FileExtension(string FileName, string FileExt)
+{
+    FileExt = "." + FileExt;
+
+    if (FileName.size() < FileExt.size())
+    {
+        return (FileName + FileExt);
+    }
+
+    string FileName_ = FileName;
+    for (uint I = 0; I < FileName.size(); I++)
+    {
+        char C = FileName_[I];
+        if ((C >= 'A') && (C <= 'Z'))
+        {
+            C = C + 32;
+            FileName_[I] = C;
+        }
+    }
+
+    string FileExt_ = FileExt;
+    for (uint I = 0; I < FileExt.size(); I++)
+    {
+        char C = FileExt_[I];
+        if ((C >= 'A') && (C <= 'Z'))
+        {
+            C = C + 32;
+            FileExt_[I] = C;
+        }
+    }
+
+    if (FileName_.substr(FileName_.size() - FileExt_.size()) == FileExt_)
+    {
+        return FileName.substr(0, FileName_.size() - FileExt_.size()) + FileExt;
+    }
+
+    return FileName + FileExt;
+}
+
 
 ///
 /// \brief Eden::StringReplace - Replaces text in string

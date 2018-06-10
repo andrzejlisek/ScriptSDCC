@@ -8,7 +8,7 @@
 #include <QColorDialog>
 
 #define DimensionType double
-#define MaxPlotWidth 20
+#define MaxPlotWidth 25
 
 namespace Ui {
 class IOGraphWin;
@@ -64,6 +64,8 @@ public:
 
     int PlotSizeP = 0;
     int PlotSizeL = 0;
+    int PlotSizeP2 = 0;
+    int PlotSizeL2 = 0;
     int BoundLP, BoundRP, BoundTP, BoundBP, BoundLL, BoundRL, BoundTL, BoundBL;
 
 private slots:

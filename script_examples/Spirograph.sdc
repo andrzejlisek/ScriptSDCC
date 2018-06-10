@@ -1,0 +1,13 @@
+ViewCommand=
+FileNameSource=Spirograph.c
+FileNameBinary=Spirograph.ihx
+Engine=0
+Memory=1
+Command=-mmcs51 --model-large --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --xram-loc 0x%DATALOC%00 --xram-size 0x%DATASIZE%00
+MemCodeLoc=03
+MemCodeSize=7D
+MemDataLoc=80
+MemDataSize=80
+MemSwapLoc=02
+LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
+Description="Program print proposed parameters on Spreadsheet 0 and stops, then you can change the parameters and run program to continue.\nAfter continue, program draws a spirograph on Graph 0 using float values and draws the same spirograph on Graph 1 using integer values.\nAfter drawing sporograph, you can again change parameters and draw another spirograph."

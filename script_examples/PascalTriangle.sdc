@@ -1,0 +1,13 @@
+ViewCommand=
+FileNameSource=PascalTriangle.c
+FileNameBinary=PascalTriangle.ihx
+Engine=1
+Memory=0
+Command=-mz180 --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --data-loc 0x%DATALOC%00
+MemCodeLoc=03
+MemCodeSize=7D
+MemDataLoc=80
+MemDataSize=80
+MemSwapLoc=02
+LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
+Description="Prints Pascal triangle on Console 0 and prints triangle fractal on Console 1 against parity of numbers."

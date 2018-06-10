@@ -1,0 +1,13 @@
+ViewCommand=
+FileNameSource=GraphRecursion.c
+FileNameBinary=GraphRecursion.ihx
+Engine=1
+Memory=0
+Command=-mz180 --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --data-loc 0x%DATALOC%00
+MemCodeLoc=03
+MemCodeSize=7D
+MemDataLoc=80
+MemDataSize=80
+MemSwapLoc=02
+LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
+Description="This program plots recursively 4096 squares on Graph 0.\n\nNot works on MCS51 engine due to too small stack memory."

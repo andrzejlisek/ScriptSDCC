@@ -19,15 +19,27 @@ MainWindow::MainWindow(QWidget *parent) :
     Sch.ParamGet("ProgCmd", Core->ProgCmd);
     Sch.ParamGet("TimerInterval", TimerInterval);
 
+    ui->SetLibDirT->setText(Eden::ToQStr(Core->LibDir));
+    ui->SetTempDirT->setText(Eden::ToQStr(Core->TempDir));
+    ui->SetProgCommandT->setText(Eden::ToQStr(Core->ProgCmd));
+    ui->SetTimerT->setValue(TimerInterval);
+
+    Sch.ParamGet("ConsoleFontName", Core->ConsoleFontName);
+    Sch.ParamGet("ConsoleFontSize", Core->ConsoleFontSize);
+    Sch.ParamGet("SpreadsheetFontName", Core->SpreadsheetFontName);
+    Sch.ParamGet("SpreadsheetFontSize", Core->SpreadsheetFontSize);
+
+    ui->SetConsFontN->setText(Eden::ToQStr(Core->ConsoleFontName));
+    ui->SetConsFontS->setValue(Core->ConsoleFontSize);
+    ui->SetSheetFontN->setText(Eden::ToQStr(Core->SpreadsheetFontName));
+    ui->SetSheetFontS->setValue(Core->SpreadsheetFontSize);
+
+    SetEventEnabled = true;
     CommandCounterF = 100000 / TimerInterval;
 
     Core->LibDir = Eden::CorrectDir(Core->LibDir);
     Core->TempDir = Eden::CorrectDir(Core->TempDir);
 
-    ui->SetLibDirT->setText(Eden::ToQStr(Core->LibDir));
-    ui->SetTempDirT->setText(Eden::ToQStr(Core->TempDir));
-    ui->SetProgCommandT->setText(Eden::ToQStr(Core->ProgCmd));
-    ui->SetTimerT->setValue(TimerInterval);
     Sch.ParamGet("CompileCount", N);
     for (int I = 0; I < N; I++)
     {
@@ -79,6 +91,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     Sch.ParamSet("ProgCmd", Eden::ToStr(ui->SetProgCommandT->text()));
     Sch.ParamSet("TimerInterval", ui->SetTimerT->value());
 
+    Sch.ParamSet("ConsoleFontName", Eden::ToStr(ui->SetConsFontN->text()));
+    Sch.ParamSet("ConsoleFontSize", ui->SetConsFontS->value());
+    Sch.ParamSet("SpreadsheetFontName", Eden::ToStr(ui->SetSheetFontN->text()));
+    Sch.ParamSet("SpreadsheetFontSize", ui->SetSheetFontS->value());
 
     Sch.ParamSet("CompileCount", N);
     for (int I = 0; I < N; I++)
@@ -319,6 +335,7 @@ void MainWindow::on_BtnConsole_clicked()
 {
     IOConsoleWin * IOConsoleWin_ = NEW(IOConsoleWin, IOConsoleWin());
     IOConsoleWin_->Core = Core;
+    IOConsoleWin_->SetDispFont();
     IOConsoleWin_->show();
     IOConsoleWin_->Refresh();
     IOConsoleWinX.push_back(IOConsoleWin_);
@@ -328,6 +345,7 @@ void MainWindow::on_BtnSpreadsheet_clicked()
 {
     IOSpreadsheetWin * IOSpreadsheetWin_ = NEW(IOSpreadsheetWin, IOSpreadsheetWin());
     IOSpreadsheetWin_->Core = Core;
+    IOSpreadsheetWin_->SetDispFont();
     IOSpreadsheetWin_->show();
     IOSpreadsheetWin_->Refresh();
     IOSpreadsheetWinX.push_back(IOSpreadsheetWin_);
@@ -394,9 +412,9 @@ void MainWindow::ProjectOpen(string FileName, bool Template)
     {
         if (!Template)
         {
-            CurrentFileName = FileName;
+            Core->CurrentFileName = FileName;
             string X = AppWindowTitle;
-            setWindowTitle(Eden::ToQStr(X + " - " + CurrentFileName));
+            setWindowTitle(Eden::ToQStr(X + " - " + Core->CurrentFileName));
         }
 
         EdenClass::ConfigFile CF;
@@ -422,6 +440,10 @@ void MainWindow::ProjectSave(string FileName)
 {
     if (FileName != "")
     {
+        Core->CurrentFileName = FileName;
+        string X = AppWindowTitle;
+        setWindowTitle(Eden::ToQStr(X + " - " + Core->CurrentFileName));
+
         EdenClass::ConfigFile CF;
         CF.ParamClear();
         CF.ParamSet("ViewCommand", Eden::ToStr(ui->ViewCommandT->text()));
@@ -443,7 +465,7 @@ void MainWindow::ProjectSave(string FileName)
 
 void MainWindow::on_ProjNew_clicked()
 {
-    CurrentFileName = "";
+    Core->CurrentFileName = "";
     setWindowTitle(Eden::ToQStr(AppWindowTitle));
 
     ui->ViewCommandT->setText("");
@@ -459,7 +481,7 @@ void MainWindow::on_ProjNew_clicked()
     ui->MemSwapT->setText("");
     ui->LibraryT->setText("");
     ui->DescrT->setPlainText("");
-    ProjectOpen(Eden::ApplicationDirectory() + "default.txt", true);
+    ProjectOpen(Eden::ApplicationDirectory() + "default" + ProjFileExt, true);
     if (CompileSchemeName.size() > 0)
     {
         ui->CompileSchemeT->setCurrentIndex(0);
@@ -474,55 +496,41 @@ void MainWindow::on_ProjNew_clicked()
 void MainWindow::on_ProjOpen_clicked()
 {
     string FileName = "";
-    if (Eden::FileExists(Eden::ApplicationDirectory() + "testprog.txt"))
+    QString X = ProjFileExt;
+    QString FileNameX = QFileDialog::getOpenFileName(this, "Open program", LastPath, "Files (*." + X + ")");
+    SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
     {
-        FileName = Eden::ApplicationDirectory() + "testprog.txt";
-    }
-    else
-    {
-        QString FileNameX = QFileDialog::getOpenFileName(this, "Open program", LastPath, "Files (*)");
-        SaveLastPath(FileNameX, false);
-        if (!FileNameX.isEmpty())
-        {
-            FileName = Eden::ToStr(FileNameX);
-        }
+        FileName = Eden::ToStr(FileNameX);
     }
     ProjectOpen(FileName, false);
 }
 
 void MainWindow::on_ProjSave_clicked()
 {
-    if (CurrentFileName == "")
+    if (Core->CurrentFileName == "")
     {
         on_ProjSaveAs_clicked();
         return;
     }
 
-    ProjectSave(CurrentFileName);
+    ProjectSave(Core->CurrentFileName);
 }
 
 void MainWindow::on_ProjSaveAs_clicked()
 {
     string FileName = "";
-    if (Eden::FileExists(Eden::ApplicationDirectory() + "testprog.txt"))
+    QString X = ProjFileExt;
+    QString FileNameX = QFileDialog::getSaveFileName(this, "Save program", LastPath, "Files (*." + X + ")");
+    SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
     {
-        FileName = Eden::ApplicationDirectory() + "testprog.txt";
-    }
-    else
-    {
-        QString FileNameX = QFileDialog::getSaveFileName(this, "Save program", LastPath, "Files (*)");
-        SaveLastPath(FileNameX, false);
-        if (!FileNameX.isEmpty())
-        {
-            FileName = Eden::ToStr(FileNameX);
-        }
+        FileName = Eden::ToStr(FileNameX);
     }
 
     if (FileName != "")
     {
-        CurrentFileName = FileName;
-        string X = AppWindowTitle;
-        setWindowTitle(Eden::ToQStr(X + " - " + CurrentFileName));
+        FileName = Eden::FileExtension(FileName, ProjFileExt);
         ProjectSave(FileName);
     }
 }
@@ -684,18 +692,18 @@ void MainWindow::on_ViewCommandB_clicked()
 void MainWindow::on_ProjListAdd_clicked()
 {
     string ProjName = Eden::ToStr(ui->ProjListT->currentText());
-    if ((CurrentFileName != "") && (ProjName != ""))
+    if ((Core->CurrentFileName != "") && (ProjName != ""))
     {
         for (uint I = 0; I < ProjectListName.size(); I++)
         {
             if (ProjectListName[I] == ProjName)
             {
-                ProjectListFile[I] = CurrentFileName;
+                ProjectListFile[I] = Core->CurrentFileName;
                 return;
             }
         }
         ProjectListName.push_back(ProjName);
-        ProjectListFile.push_back(CurrentFileName);
+        ProjectListFile.push_back(Core->CurrentFileName);
         ui->ProjListT->addItem(Eden::ToQStr(ProjName));
         ProjectSort();
     }
@@ -731,5 +739,61 @@ void MainWindow::on_ProjListT_currentIndexChanged(int index)
     if (index > 0)
     {
         ProjectOpen(ProjectListFile[index - 1], false);
+    }
+}
+
+void MainWindow::on_SetProgCommandT_textEdited(const QString &arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->ProgCmd = Eden::ToStr(arg1);
+    }
+}
+
+void MainWindow::on_SetLibDirT_textEdited(const QString &arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->LibDir = Eden::ToStr(arg1);
+    }
+}
+
+void MainWindow::on_SetTempDirT_textEdited(const QString &arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->TempDir = Eden::ToStr(arg1);
+    }
+}
+
+void MainWindow::on_SetConsFontN_textEdited(const QString &arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->ConsoleFontName = Eden::ToStr(arg1);
+    }
+}
+
+void MainWindow::on_SetConsFontS_valueChanged(int arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->ConsoleFontSize = arg1;
+    }
+}
+
+void MainWindow::on_SetSheetFontN_textEdited(const QString &arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->SpreadsheetFontName = Eden::ToStr(arg1);
+    }
+}
+
+void MainWindow::on_SetSheetFontS_valueChanged(int arg1)
+{
+    if (SetEventEnabled)
+    {
+        Core->SpreadsheetFontSize = arg1;
     }
 }

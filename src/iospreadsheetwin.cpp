@@ -189,6 +189,24 @@ void IOSpreadsheetWin::on_Show3_clicked()
     Refresh();
 }
 
+void IOSpreadsheetWin::SetDispFont()
+{
+    EventEnabled = false;
+    QFont F = QFont(Eden::ToQStr(Core->SpreadsheetFontName), Core->SpreadsheetFontSize, 0, false);
+    ui->SpreadsheetScreen->setFont(F);
+    for (int I = 0; I < 256; I++)
+    {
+        ui->SpreadsheetScreen->verticalHeaderItem(I)->setFont(F);
+        ui->SpreadsheetScreen->horizontalHeaderItem(I)->setFont(F);
+        for (int II = 0; II < 256; II++)
+        {
+            ui->SpreadsheetScreen->item(I, II)->setFont(F);
+        }
+        ui->SpreadsheetScreen->resizeRowToContents(I);
+    }
+    EventEnabled = true;
+}
+
 void IOSpreadsheetWin::Refresh()
 {
     EventEnabled = false;

@@ -47,6 +47,7 @@ void AppCore::ProgRun()
 
 string AppCore::ProgCompile(string LibFiles)
 {
+    string SysMessage = "";
     CompileGood = false;
 
     if (SM != NULL)
@@ -55,22 +56,54 @@ string AppCore::ProgCompile(string LibFiles)
         SM = NULL;
     }
 
+    // Creating source code directory
+    string ProgDir = GetFilePath(ProgFileSrc);
+    string ProjDir = GetFilePath(CurrentFileName);
+
     // Clearing temporary directory
     ClearTemp();
 
-    // Copying library files
+    // Copying source and library files
     vector<string> LibFilesX = Eden::StringSplit(LibFiles, '|');
+    LibFilesX.push_back(ProgFileSrc);
     for (uint I = 0; I < LibFilesX.size(); I++)
     {
-        if (!FileCopy(LibDir + LibFilesX[I], TempDir))
+        bool CopyOK = false;
+
+        string FilePath = GetFilePath(LibFilesX[I]);
+
+        if (FilePath != "")
         {
-            FileCopy(LibFilesX[I], TempDir);
+            CopyOK = FileCopy(LibFilesX[I], TempDir);
+        }
+        else
+        {
+            if ((!CopyOK) && (ProjDir != ""))
+            {
+                CopyOK = FileCopy(ProjDir + LibFilesX[I], TempDir);
+            }
+
+            if ((!CopyOK) && (ProgDir != ""))
+            {
+                CopyOK = FileCopy(ProgDir + LibFilesX[I], TempDir);
+            }
+
+            if ((!CopyOK) && (LibDir != ""))
+            {
+                CopyOK = FileCopy(LibDir + LibFilesX[I], TempDir);
+            }
+        }
+
+        if (!CopyOK)
+        {
+            SysMessage = SysMessage + "File \"" + LibFilesX[I] + "\" not found" + Eden::EOL();
         }
     }
 
-    // Copying source code file
-    FileCopy(ProgFileSrc, TempDir);
-
+    if (SysMessage != "")
+    {
+        return SysMessage;
+    }
 
     // Creating system header file
     fstream F0(TempDir + "_.h", ios::out);
@@ -197,6 +230,26 @@ void AppCore::ClearTemp()
     #endif
 }
 
+string AppCore::GetFilePath(string FileName)
+{
+    string F = "";
+    int T = -1;
+    for (int I = FileName.length() - 1; I > 0; I--)
+    {
+        if ((FileName[I] == '/') || (FileName[I] == '\\'))
+        {
+            T = 0;
+            while (T <= I)
+            {
+                F = F + FileName[T];
+                T++;
+            }
+            return F;
+        }
+    }
+    return "";
+}
+
 string AppCore::GetFileName(string FileName)
 {
     string F = "";
@@ -211,10 +264,10 @@ string AppCore::GetFileName(string FileName)
                 F = F + FileName[T];
                 T++;
             }
-            break;
+            return F;
         }
     }
-    return F;
+    return FileName;
 }
 
 bool AppCore::FileCopy(string SrcFile, string DstDir)

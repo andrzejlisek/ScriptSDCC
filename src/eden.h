@@ -74,6 +74,7 @@ public:
     static bool FileExists(string FN);
     static string CorrectDir(string D);
     static QString CorrectDir(QString D);
+    static string FileExtension(string FileName, string FileExt);
 
     static unsigned int* GetRGB(unsigned int ColorRGB);
     static unsigned int XRGB(unsigned int R, unsigned int G, unsigned int B);

@@ -48,8 +48,6 @@ public:
     vector<string> ProjectListName;
     vector<string> ProjectListFile;
 
-    string CurrentFileName = "";
-
 private slots:
     void TimerEvent();
 
@@ -107,6 +105,20 @@ private slots:
 
     void on_ProjListT_currentIndexChanged(int index);
 
+    void on_SetProgCommandT_textEdited(const QString &arg1);
+
+    void on_SetLibDirT_textEdited(const QString &arg1);
+
+    void on_SetTempDirT_textEdited(const QString &arg1);
+
+    void on_SetConsFontN_textEdited(const QString &arg1);
+
+    void on_SetConsFontS_valueChanged(int arg1);
+
+    void on_SetSheetFontN_textEdited(const QString &arg1);
+
+    void on_SetSheetFontS_valueChanged(int arg1);
+
 signals:
     void GuiEvtS();
 
@@ -131,6 +143,7 @@ private:
     void ProjectSave(string FileName);
     QString LastPath = "";
     void SaveLastPath(QString X, bool OpenDir);
+    bool SetEventEnabled = false;
 };
 
 #endif // MAINWINDOW_H
