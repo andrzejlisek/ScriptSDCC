@@ -1,0 +1,13 @@
+ViewCommand=
+FileNameSource=FileDemo.c
+FileNameBinary=FileDemo.ihx
+Engine=0
+Memory=1
+Command=-mmcs51 --model-large --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --xram-loc 0x%DATALOC%00 --xram-size 0x%DATASIZE%00
+MemCodeLoc=03
+MemCodeSize=7D
+MemDataLoc=80
+MemDataSize=80
+MemSwapLoc=02
+LibraryFiles=core.h|console.h|spreadsheet.h|file.h|buffer.h
+Description="This script asks for file names in Spreadsheet 0 and copys content of one text file to another text file witch letter case change."

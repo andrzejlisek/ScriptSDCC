@@ -9,5 +9,5 @@ MemCodeSize=7D
 MemDataLoc=80
 MemDataSize=80
 MemSwapLoc=02
-LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
-Description="This program plots recursively 4096 squares on Graph 0.\n\nNot works on MCS51 engine due to too small stack memory."
+LibraryFiles=core.h|graph.h|mathx.h
+Description="This program plots recursively 4096 squares on Graph 0.\n"

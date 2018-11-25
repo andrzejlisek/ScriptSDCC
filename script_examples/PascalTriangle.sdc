@@ -9,5 +9,5 @@ MemCodeSize=7D
 MemDataLoc=80
 MemDataSize=80
 MemSwapLoc=02
-LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
-Description="Prints Pascal triangle on Console 0 and prints triangle fractal on Console 1 against parity of numbers."
+LibraryFiles=core.h|console.h
+Description="Prints Pascal triangle on Console 0 and prints triangle fractal on Console 1 related to parity of numbers."

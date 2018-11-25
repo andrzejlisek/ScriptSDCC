@@ -24,12 +24,12 @@ void main()
   X = sinf(T1) + 2.0 * sinf(T2);
   Y = cosf(T1) - 2.0 * cosf(T2);
   Z = 0.0 - sinf(T3);
-  graph_plot_float(0, X * Radius, Y * Radius, Z * Radius, 255, 255, 255);
+  graph_plot_float(0, X * Radius, Y * Radius, Z * Radius, 128, 128, 128);
 
-  X = (2.0 + cosf(T3)) * cosf(T2);
-  Y = (2.0 + cosf(T3)) * sinf(T2);
+  X = (2.0 + cosf(T3)) * sinf(T2);
+  Y = (2.0 + cosf(T3)) * cosf(T2) * (-1);
   Z = sinf(T3);
-  graph_plot_float(1, X * Radius, Y * Radius, Z * Radius, 255, 255, 255);
+  graph_plot_float(1, X * Radius, Y * Radius, Z * Radius, 128, 128, 128);
 
  } 
  end();

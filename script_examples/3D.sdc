@@ -1,6 +1,6 @@
 ViewCommand=
-FileNameSource=CubeOctahedron.c
-FileNameBinary=CubeOctahedron.ihx
+FileNameSource=3D.c
+FileNameBinary=3D.ihx
 Engine=0
 Memory=1
 Command=-mmcs51 --model-large --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --xram-loc 0x%DATALOC%00 --xram-size 0x%DATASIZE%00
@@ -9,5 +9,5 @@ MemCodeSize=7D
 MemDataLoc=80
 MemDataSize=80
 MemSwapLoc=02
-LibraryFiles=core.h|graph.h|mathx.h
-Description="Draws cube on Graph 0, Octahedron on Graph 1 and solid similar to ball on Graph 2."
+LibraryFiles=core.h|console.h|spreadsheet.h|graph.h|mathx.h
+Description="Draws paraboloid on Graph 1 using lines, on Graph 2 and Graph 3 using triangles."

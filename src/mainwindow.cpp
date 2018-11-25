@@ -9,19 +9,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     GuiEvt();
 
+
     EdenClass::ConfigFile Sch;
     Sch.FileLoad(Eden::ApplicationDirectory() + "settings.txt");
     int N = 0;
     int TimerInterval = 500;
 
-    Sch.ParamGet("LibDir", Core->LibDir);
-    Sch.ParamGet("TempDir", Core->TempDir);
-    Sch.ParamGet("ProgCmd", Core->ProgCmd);
+    string XLibDir = "lib";
+    string XTempDir = "temp";
+    string XProgCmd = "sdcc";
+
+    Sch.ParamGet("LibDir", XLibDir);
+    Sch.ParamGet("TempDir", XTempDir);
+    Sch.ParamGet("ProgCmd", XProgCmd);
     Sch.ParamGet("TimerInterval", TimerInterval);
 
-    ui->SetLibDirT->setText(Eden::ToQStr(Core->LibDir));
-    ui->SetTempDirT->setText(Eden::ToQStr(Core->TempDir));
-    ui->SetProgCommandT->setText(Eden::ToQStr(Core->ProgCmd));
+    ui->SetLibDirT->setText(Eden::ToQStr(XLibDir));
+    ui->SetTempDirT->setText(Eden::ToQStr(XTempDir));
+    ui->SetProgCommandT->setText(Eden::ToQStr(XProgCmd));
     ui->SetTimerT->setValue(TimerInterval);
 
     Sch.ParamGet("ConsoleFontName", Core->ConsoleFontName);
@@ -34,11 +39,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->SetSheetFontN->setText(Eden::ToQStr(Core->SpreadsheetFontName));
     ui->SetSheetFontS->setValue(Core->SpreadsheetFontSize);
 
+    ui->SetGraphFontT->setText(Eden::ToQStr(Core->GraphFontFile));
+
     SetEventEnabled = true;
     CommandCounterF = 100000 / TimerInterval;
 
-    Core->LibDir = Eden::CorrectDir(Core->LibDir);
-    Core->TempDir = Eden::CorrectDir(Core->TempDir);
+    XLibDir = Eden::CorrectDir(XLibDir);
+    XTempDir = Eden::CorrectDir(XTempDir);
+
+    for (int I = 0; I < Core->BundleCount; I++)
+    {
+        Core->Bundle[I]->LibDir = XLibDir;
+        Core->Bundle[I]->TempDir = XTempDir;
+        Core->Bundle[I]->ProgCmd = XProgCmd;
+    }
 
     Sch.ParamGet("CompileCount", N);
     for (int I = 0; I < N; I++)
@@ -73,12 +87,17 @@ MainWindow::MainWindow(QWidget *parent) :
     TimerEventEnabled = true;
     Timer.start(TimerInterval);
     on_ProjNew_clicked();
+
+    BundleRefresh();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     TimerEventEnabled = false;
-    Core->ProgAbort();
+    for (int I = 0; I < Core->BundleCount; I++)
+    {
+        Core->Bundle[I]->ProgAbort();
+    }
     Timer.stop();
     event++;
     event--;
@@ -95,6 +114,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     Sch.ParamSet("ConsoleFontSize", ui->SetConsFontS->value());
     Sch.ParamSet("SpreadsheetFontName", Eden::ToStr(ui->SetSheetFontN->text()));
     Sch.ParamSet("SpreadsheetFontSize", ui->SetSheetFontS->value());
+    Sch.ParamSet("SpreadsheetFontName", Eden::ToStr(ui->SetSheetFontN->text()));
+    Sch.ParamSet("GraphFontFile", Eden::ToStr(ui->SetGraphFontT->text()));
 
     Sch.ParamSet("CompileCount", N);
     for (int I = 0; I < N; I++)
@@ -104,7 +125,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         Sch.ParamSet("CompileEngine2" + Eden::ToStr(I), CompileSchemeEngine2[I]);
         Sch.ParamSet("CompileCommand" + Eden::ToStr(I), CompileSchemeCommand[I]);
     }
-
 
     N = ProjectListName.size();
     Sch.ParamSet("ProjectCount", N);
@@ -120,23 +140,32 @@ void MainWindow::closeEvent(QCloseEvent *event)
     L = IOConsoleWinX.size();
     for (I = 0; I < L; I++)
     {
-        IOConsoleWinX[I]->close();
-        DEL(IOConsoleWin, IOConsoleWinX[I]);
+        if (IOConsoleWinX[I] != NULL)
+        {
+            IOConsoleWinX[I]->close();
+            DEL(IOConsoleWin, IOConsoleWinX[I]);
+        }
     }
     L = IOSpreadsheetWinX.size();
     for (I = 0; I < L; I++)
     {
-        IOSpreadsheetWinX[I]->close();
-        DEL(IOSpreadsheetWin, IOSpreadsheetWinX[I]);
+        if (IOSpreadsheetWinX[I] != NULL)
+        {
+            IOSpreadsheetWinX[I]->close();
+            DEL(IOSpreadsheetWin, IOSpreadsheetWinX[I]);
+        }
     }
     L = IOGraphWinX.size();
     for (I = 0; I < L; I++)
     {
-        IOGraphWinX[I]->close();
-        DEL(IOGraphWin, IOGraphWinX[I]);
+        if (IOGraphWinX[I] != NULL)
+        {
+            IOGraphWinX[I]->close();
+            DEL(IOGraphWin, IOGraphWinX[I]);
+        }
     }
-    disconnect(&Timer, SIGNAL(timeout()), this, SLOT(TimerEvent()));
-    DEL(AppCore, Core);
+    //disconnect(&Timer, SIGNAL(timeout()), this, SLOT(TimerEvent()));
+    //DEL(AppCore, Core);
 }
 
 
@@ -147,64 +176,74 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_BtnCompile_clicked()
 {
-    Core->Engine = ui->EngineT1->currentIndex();
-    Core->MemMode = ui->EngineT2->currentIndex();
-    Core->CompileCommand = Eden::ToStr(ui->CommandT->text());
-    Core->ProgFileSrc = Eden::ToStr(ui->FileNameT1->text());
-    Core->ProgFileBin = Eden::ToStr(ui->FileNameT2->text());
-    Core->SwapPage = Eden::HexToInt(Eden::ToStr(ui->MemSwapT->text()));
-    Core->CodeLoc = Eden::HexToInt(Eden::ToStr(ui->MemCodeT1->text()));
-    Core->CodeSize = Eden::HexToInt(Eden::ToStr(ui->MemCodeT2->text()));
-    Core->DataLoc = Eden::HexToInt(Eden::ToStr(ui->MemDataT1->text()));
-    Core->DataSize = Eden::HexToInt(Eden::ToStr(ui->MemDataT2->text()));
-    ui->CompileMsgT->setPlainText(Eden::ToQStr(Core->ProgCompile(Eden::ToStr(ui->LibraryT->text()))));
+    int Idx = Core->BundleIndex;
+    BundleItemSet();
 
-    if (Core->CompileGood)
+    Core->Compile();
+    QObject::connect(Core->Bundle[Idx]->SM, SIGNAL(CoreInvoke(uchar, uchar, uchar)), this, SLOT(CoreInvoke(uchar, uchar, uchar)));
+
+    ui->CompileMsgT->setPlainText(Eden::ToQStr(Core->Bundle[Idx]->CompileMsg));
+
+
+    if (Core->Bundle[Idx]->CompileGood)
     {
-        BtnRun = true;
-        BtnReset = true;
+        Core->Bundle[Idx]->BtnRun = true;
+        Core->Bundle[Idx]->BtnReset = true;
     }
     else
     {
-        BtnRun = false;
-        BtnReset = false;
+        Core->Bundle[Idx]->BtnRun = false;
+        Core->Bundle[Idx]->BtnReset = false;
     }
     GuiEvt();
 }
 
 void MainWindow::on_BtnRun_clicked()
 {
-    BtnCompile = false;
-    BtnRun = false;
-    BtnReset = false;
-    BtnAbort = true;
-    GuiEvt();
-
-    std::thread Thr(&MainWindow::ExecThr, this);
-    Thr.detach();
+    ExecStart(Core->BundleIndex);
 }
 
-void MainWindow::ExecThr()
+int MainWindow::ExecStart(int Idx)
 {
-    Core->ProgRun();
+    uchar StatusX = Core->GetStatusI(Idx);
+    if ((StatusX != 0) && (StatusX != 2) && (StatusX != 3))
+    {
+        return 0;
+    }
 
-    BtnCompile = true;
-    BtnRun = true;
-    BtnReset = true;
-    BtnAbort = false;
+    Core->Bundle[Idx]->BtnCompile = false;
+    Core->Bundle[Idx]->BtnRun = false;
+    Core->Bundle[Idx]->BtnReset = false;
+    Core->Bundle[Idx]->BtnAbort = true;
+    GuiEvt();
+
+    std::thread Thr(&MainWindow::ExecThr, this, Idx);
+    Thr.detach();
+    return 1;
+}
+
+void MainWindow::ExecThr(int Idx)
+{
+    Core->Bundle[Idx]->ProgRun();
+
+    Core->Bundle[Idx]->BtnCompile = true;
+    Core->Bundle[Idx]->BtnRun = true;
+    Core->Bundle[Idx]->BtnReset = true;
+    Core->Bundle[Idx]->BtnAbort = false;
     emit GuiEvtS();
 }
 
 void MainWindow::on_BtnReset_clicked()
 {
-    Core->ProgReset();
+    Core->Bundle[Core->BundleIndex]->ProgReset();
 }
 
 void MainWindow::on_BtnAbort_clicked()
 {
-    BtnAbort = false;
+    int Idx = Core->BundleIndex;
+    Core->Bundle[Idx]->BtnAbort = false;
     GuiEvt();
-    Core->ProgAbort();
+    Core->Bundle[Idx]->ProgAbort();
 }
 
 void MainWindow::TimerEvent()
@@ -296,7 +335,7 @@ void MainWindow::TimerEvent()
         {
             if (IOGraphWinX[I]->isVisible())
             {
-                IOGraphWinX[I]->Refresh();
+                IOGraphWinX[I]->Refresh(false, "", 0, 0);
             }
             else
             {
@@ -309,12 +348,16 @@ void MainWindow::TimerEvent()
             }
         }
     }
+    Core->IOGraph_[0]->NeedRedrawLast = -1;
+    Core->IOGraph_[1]->NeedRedrawLast = -1;
+    Core->IOGraph_[2]->NeedRedrawLast = -1;
+    Core->IOGraph_[3]->NeedRedrawLast = -1;
     Core->IOGraph_[0]->NeedRedraw = false;
     Core->IOGraph_[1]->NeedRedraw = false;
     Core->IOGraph_[2]->NeedRedraw = false;
     Core->IOGraph_[3]->NeedRedraw = false;
 
-    if (ui->ProjectsTabs->currentIndex() == 2)
+    if (ui->ProjectsTabs->currentIndex() == 3)
     {
         QImage * X = Core->MemMapRepaint();
         if (ui->MemMap->ImgX != NULL)
@@ -328,6 +371,7 @@ void MainWindow::TimerEvent()
         }
         ui->MemMap->ImgX = X;
         ui->MemMap->repaint();
+        ui->FileInfo->setText(Eden::ToQStr(Core->FileHandle_->Info(Core->BundleIndex)));
     }
 }
 
@@ -356,7 +400,7 @@ void MainWindow::on_BtnGraph_clicked()
     IOGraphWin * IOGraphWin_ = NEW(IOGraphWin, IOGraphWin());
     IOGraphWin_->Core = Core;
     IOGraphWin_->show();
-    IOGraphWin_->Refresh();
+    IOGraphWin_->Refresh(false, "", 0, 0);
     IOGraphWinX.push_back(IOGraphWin_);
 }
 
@@ -398,41 +442,53 @@ void MainWindow::on_MemMapVScroll_valueChanged(int value)
 
 void MainWindow::on_MemMapDispCode_clicked()
 {
+    Core->MemMapBuff = false;
     Core->MemMapData = false;
 }
 
 void MainWindow::on_MemMapDispData_clicked()
 {
+    Core->MemMapBuff = false;
     Core->MemMapData = true;
 }
 
-void MainWindow::ProjectOpen(string FileName, bool Template)
+void MainWindow::on_MemMapDispBuff_clicked()
+{
+    Core->MemMapBuff = true;
+}
+
+void MainWindow::ProjectOpen(string FileName, bool Template, bool NoRefresh)
 {
     if ((FileName != "") && Eden::FileExists(FileName))
     {
+        int Idx = Core->BundleIndex;
         if (!Template)
         {
-            Core->CurrentFileName = FileName;
-            string X = AppWindowTitle;
-            setWindowTitle(Eden::ToQStr(X + " - " + Core->CurrentFileName));
+            Core->Bundle[Idx]->BundleFile = FileName;
         }
 
         EdenClass::ConfigFile CF;
         CF.FileLoad(FileName);
-        ui->ViewCommandT->setText(Eden::ToQStr(CF.ParamGetS("ViewCommand")));
-        ui->FileNameT1->setText(Eden::ToQStr(CF.ParamGetS("FileNameSource")));
-        ui->FileNameT2->setText(Eden::ToQStr(CF.ParamGetS("FileNameBinary")));
-        ui->EngineT1->setCurrentIndex(CF.ParamGetI("Engine"));
-        ui->EngineT2->setCurrentIndex(CF.ParamGetI("Memory"));
-        ui->CommandT->setText(Eden::ToQStr(CF.ParamGetS("Command")));
-        ui->MemCodeT1->setText(Eden::ToQStr(CF.ParamGetS("MemCodeLoc")));
-        ui->MemCodeT2->setText(Eden::ToQStr(CF.ParamGetS("MemCodeSize")));
-        ui->MemDataT1->setText(Eden::ToQStr(CF.ParamGetS("MemDataLoc")));
-        ui->MemDataT2->setText(Eden::ToQStr(CF.ParamGetS("MemDataSize")));
-        ui->MemSwapT->setText(Eden::ToQStr(CF.ParamGetS("MemSwapLoc")));
-        ui->LibraryT->setText(Eden::ToQStr(CF.ParamGetS("LibraryFiles")));
-        ui->DescrT->setPlainText(Eden::ToQStr(Eden::MultilineDecode(CF.ParamGetS("Description"))));
-        ui->CompileSchemeT->setCurrentText("");
+        Core->Bundle[Idx]->ViewCmd = CF.ParamGetS("ViewCommand");
+        Core->Bundle[Idx]->ProgFileSrc = CF.ParamGetS("FileNameSource");
+        Core->Bundle[Idx]->ProgFileBin = CF.ParamGetS("FileNameBinary");
+        Core->Bundle[Idx]->Engine = CF.ParamGetI("Engine");
+        Core->Bundle[Idx]->MemMode = CF.ParamGetI("Memory");
+        Core->Bundle[Idx]->CompileCommand = CF.ParamGetS("Command");
+        Core->Bundle[Idx]->CodeLoc_ = Eden::HexToInt(CF.ParamGetS("MemCodeLoc"));
+        Core->Bundle[Idx]->CodeSize = Eden::HexToInt(CF.ParamGetS("MemCodeSize"));
+        Core->Bundle[Idx]->DataLoc_ = Eden::HexToInt(CF.ParamGetS("MemDataLoc"));
+        Core->Bundle[Idx]->DataSize = Eden::HexToInt(CF.ParamGetS("MemDataSize"));
+        Core->Bundle[Idx]->SwapPage = Eden::HexToInt(CF.ParamGetS("MemSwapLoc"));
+        Core->Bundle[Idx]->LibFiles = CF.ParamGetS("LibraryFiles");
+        Core->Bundle[Idx]->Descr = CF.ParamGetS("Description");
+        //ui->CompileSchemeT->setCurrentText("");
+
+        if (!NoRefresh)
+        {
+            BundleItemGet();
+            BundleRefresh();
+        }
     }
 }
 
@@ -440,48 +496,37 @@ void MainWindow::ProjectSave(string FileName)
 {
     if (FileName != "")
     {
-        Core->CurrentFileName = FileName;
-        string X = AppWindowTitle;
-        setWindowTitle(Eden::ToQStr(X + " - " + Core->CurrentFileName));
+        int Idx = Core->BundleIndex;
+        Core->Bundle[Idx]->BundleFile = FileName;
 
+        BundleItemSet();
         EdenClass::ConfigFile CF;
         CF.ParamClear();
-        CF.ParamSet("ViewCommand", Eden::ToStr(ui->ViewCommandT->text()));
-        CF.ParamSet("FileNameSource", Eden::ToStr(ui->FileNameT1->text()));
-        CF.ParamSet("FileNameBinary", Eden::ToStr(ui->FileNameT2->text()));
-        CF.ParamSet("Engine", ui->EngineT1->currentIndex());
-        CF.ParamSet("Memory", ui->EngineT2->currentIndex());
-        CF.ParamSet("Command", Eden::ToStr(ui->CommandT->text()));
-        CF.ParamSet("MemCodeLoc", Eden::ToStr(ui->MemCodeT1->text()));
-        CF.ParamSet("MemCodeSize", Eden::ToStr(ui->MemCodeT2->text()));
-        CF.ParamSet("MemDataLoc", Eden::ToStr(ui->MemDataT1->text()));
-        CF.ParamSet("MemDataSize", Eden::ToStr(ui->MemDataT2->text()));
-        CF.ParamSet("MemSwapLoc", Eden::ToStr(ui->MemSwapT->text()));
-        CF.ParamSet("LibraryFiles", Eden::ToStr(ui->LibraryT->text()));
-        CF.ParamSet("Description", Eden::MultilineEncode(Eden::ToStr(ui->DescrT->toPlainText())));
+        CF.ParamSet("ViewCommand", Core->Bundle[Idx]->ViewCmd);
+        CF.ParamSet("FileNameSource", Core->Bundle[Idx]->ProgFileSrc);
+        CF.ParamSet("FileNameBinary", Core->Bundle[Idx]->ProgFileBin);
+        CF.ParamSet("Engine", Core->Bundle[Idx]->Engine);
+        CF.ParamSet("Memory", Core->Bundle[Idx]->MemMode);
+        CF.ParamSet("Command", Core->Bundle[Idx]->CompileCommand);
+        CF.ParamSet("MemCodeLoc", Eden::IntToHex8(Core->Bundle[Idx]->CodeLoc_));
+        CF.ParamSet("MemCodeSize", Eden::IntToHex8(Core->Bundle[Idx]->CodeSize));
+        CF.ParamSet("MemDataLoc", Eden::IntToHex8(Core->Bundle[Idx]->DataLoc_));
+        CF.ParamSet("MemDataSize", Eden::IntToHex8(Core->Bundle[Idx]->DataSize));
+        CF.ParamSet("MemSwapLoc", Eden::IntToHex8(Core->Bundle[Idx]->SwapPage));
+        CF.ParamSet("LibraryFiles", Core->Bundle[Idx]->LibFiles);
+        CF.ParamSet("Description", Core->Bundle[Idx]->Descr);
         CF.FileSave(FileName);
+        BundleRefresh();
     }
 }
 
 void MainWindow::on_ProjNew_clicked()
 {
-    Core->CurrentFileName = "";
+    int Idx = Core->BundleIndex;
+    Core->Bundle[Idx]->BundleFile = "";
     setWindowTitle(Eden::ToQStr(AppWindowTitle));
 
-    ui->ViewCommandT->setText("");
-    ui->FileNameT1->setText("");
-    ui->FileNameT2->setText("");
-    ui->EngineT1->setCurrentIndex(0);
-    ui->EngineT2->setCurrentIndex(0);
-    ui->CommandT->setText("");
-    ui->MemCodeT1->setText("");
-    ui->MemCodeT2->setText("");
-    ui->MemDataT1->setText("");
-    ui->MemDataT2->setText("");
-    ui->MemSwapT->setText("");
-    ui->LibraryT->setText("");
-    ui->DescrT->setPlainText("");
-    ProjectOpen(Eden::ApplicationDirectory() + "default" + ProjFileExt, true);
+    ProjectOpen(Eden::ApplicationDirectory() + "default" + ProjFileExt, true, false);
     if (CompileSchemeName.size() > 0)
     {
         ui->CompileSchemeT->setCurrentIndex(0);
@@ -491,38 +536,40 @@ void MainWindow::on_ProjNew_clicked()
     {
         ui->CompileSchemeT->setCurrentText("");
     }
+    BundleItemGet();
+    BundleRefresh();
 }
 
 void MainWindow::on_ProjOpen_clicked()
 {
     string FileName = "";
     QString X = ProjFileExt;
-    QString FileNameX = QFileDialog::getOpenFileName(this, "Open program", LastPath, "Files (*." + X + ")");
-    SaveLastPath(FileNameX, false);
+    QString FileNameX = QFileDialog::getOpenFileName(this, "Open program", Core->LastPath, "Files (*." + X + ")");
+    Core->SaveLastPath(FileNameX, false);
     if (!FileNameX.isEmpty())
     {
         FileName = Eden::ToStr(FileNameX);
     }
-    ProjectOpen(FileName, false);
+    ProjectOpen(FileName, false, false);
 }
 
 void MainWindow::on_ProjSave_clicked()
 {
-    if (Core->CurrentFileName == "")
+    if (Core->Bundle[Core->BundleIndex]->BundleFile == "")
     {
         on_ProjSaveAs_clicked();
         return;
     }
 
-    ProjectSave(Core->CurrentFileName);
+    ProjectSave(Core->Bundle[Core->BundleIndex]->BundleFile);
 }
 
 void MainWindow::on_ProjSaveAs_clicked()
 {
     string FileName = "";
     QString X = ProjFileExt;
-    QString FileNameX = QFileDialog::getSaveFileName(this, "Save program", LastPath, "Files (*." + X + ")");
-    SaveLastPath(FileNameX, false);
+    QString FileNameX = QFileDialog::getSaveFileName(this, "Save program", Core->LastPath, "Files (*." + X + ")");
+    Core->SaveLastPath(FileNameX, false);
     if (!FileNameX.isEmpty())
     {
         FileName = Eden::ToStr(FileNameX);
@@ -533,6 +580,7 @@ void MainWindow::on_ProjSaveAs_clicked()
         FileName = Eden::FileExtension(FileName, ProjFileExt);
         ProjectSave(FileName);
     }
+    BundleItemGet();
 }
 
 void MainWindow::CompileSchemeRefresh()
@@ -662,25 +710,11 @@ void MainWindow::SchemeSort()
 
 void MainWindow::GuiEvt()
 {
-    ui->BtnCompile->setEnabled(BtnCompile);
-    ui->BtnReset->setEnabled(BtnReset);
-    ui->BtnRun->setEnabled(BtnRun);
-    ui->BtnAbort->setEnabled(BtnAbort);
-}
-
-void MainWindow::SaveLastPath(QString X, bool OpenDir)
-{
-    if (!X.isEmpty())
-    {
-        if (OpenDir)
-        {
-            LastPath = QFileInfo(X).filePath();
-        }
-        else
-        {
-            LastPath = QFileInfo(X).path();
-        }
-    }
+    int Idx = Core->BundleIndex;
+    ui->BtnCompile->setEnabled(Core->Bundle[Idx]->BtnCompile);
+    ui->BtnReset->setEnabled(Core->Bundle[Idx]->BtnReset);
+    ui->BtnRun->setEnabled(Core->Bundle[Idx]->BtnRun);
+    ui->BtnAbort->setEnabled(Core->Bundle[Idx]->BtnAbort);
 }
 
 void MainWindow::on_ViewCommandB_clicked()
@@ -692,18 +726,18 @@ void MainWindow::on_ViewCommandB_clicked()
 void MainWindow::on_ProjListAdd_clicked()
 {
     string ProjName = Eden::ToStr(ui->ProjListT->currentText());
-    if ((Core->CurrentFileName != "") && (ProjName != ""))
+    if ((Core->Bundle[Core->BundleIndex]->BundleFile != "") && (ProjName != ""))
     {
         for (uint I = 0; I < ProjectListName.size(); I++)
         {
             if (ProjectListName[I] == ProjName)
             {
-                ProjectListFile[I] = Core->CurrentFileName;
+                ProjectListFile[I] = Core->Bundle[Core->BundleIndex]->BundleFile;
                 return;
             }
         }
         ProjectListName.push_back(ProjName);
-        ProjectListFile.push_back(Core->CurrentFileName);
+        ProjectListFile.push_back(Core->Bundle[Core->BundleIndex]->BundleFile);
         ui->ProjListT->addItem(Eden::ToQStr(ProjName));
         ProjectSort();
     }
@@ -738,7 +772,7 @@ void MainWindow::on_ProjListT_currentIndexChanged(int index)
 {
     if (index > 0)
     {
-        ProjectOpen(ProjectListFile[index - 1], false);
+        ProjectOpen(ProjectListFile[index - 1], false, false);
     }
 }
 
@@ -746,7 +780,7 @@ void MainWindow::on_SetProgCommandT_textEdited(const QString &arg1)
 {
     if (SetEventEnabled)
     {
-        Core->ProgCmd = Eden::ToStr(arg1);
+        Core->Bundle[Core->BundleIndex]->ProgCmd = Eden::ToStr(arg1);
     }
 }
 
@@ -754,7 +788,7 @@ void MainWindow::on_SetLibDirT_textEdited(const QString &arg1)
 {
     if (SetEventEnabled)
     {
-        Core->LibDir = Eden::ToStr(arg1);
+        Core->Bundle[Core->BundleIndex]->LibDir = Eden::CorrectDir(Eden::ToStr(arg1));
     }
 }
 
@@ -762,7 +796,7 @@ void MainWindow::on_SetTempDirT_textEdited(const QString &arg1)
 {
     if (SetEventEnabled)
     {
-        Core->TempDir = Eden::ToStr(arg1);
+        Core->Bundle[Core->BundleIndex]->TempDir = Eden::CorrectDir(Eden::ToStr(arg1));
     }
 }
 
@@ -796,4 +830,315 @@ void MainWindow::on_SetSheetFontS_valueChanged(int arg1)
     {
         Core->SpreadsheetFontSize = arg1;
     }
+}
+
+void MainWindow::BundleRefresh()
+{
+    int I;
+    if (ui->BundleList->count() == 0)
+    {
+        for (I = 0; I < Core->BundleCount; I++)
+        {
+            ui->BundleList->addItem("X");
+        }
+        ui->BundleList->setCurrentRow(0);
+    }
+    for (I = 0; I < Core->BundleCount; I++)
+    {
+        if (Core->Bundle[I]->BundleDesc != "")
+        {
+            ui->BundleList->item(I)->setText(Eden::ToQStr(I) + "  " + Eden::ToQStr(Core->Bundle[I]->BundleDesc));
+        }
+        else
+        {
+            ui->BundleList->item(I)->setText(Eden::ToQStr(I) + "  " + Eden::ToQStr(Core->Bundle[I]->BundleFile));
+        }
+    }
+}
+
+void MainWindow::BundleItemGet()
+{
+    int Idx = Core->BundleIndex;
+    ui->ViewCommandT->setText(Eden::ToQStr(Core->Bundle[Idx]->ViewCmd));
+    ui->EngineT1->setCurrentIndex(Core->Bundle[Idx]->Engine);
+    ui->EngineT2->setCurrentIndex(Core->Bundle[Idx]->MemMode);
+    ui->CommandT->setText(Eden::ToQStr(Core->Bundle[Idx]->CompileCommand));
+    ui->FileNameT1->setText(Eden::ToQStr(Core->Bundle[Idx]->ProgFileSrc));
+    ui->FileNameT2->setText(Eden::ToQStr(Core->Bundle[Idx]->ProgFileBin));
+    ui->MemSwapT->setText(Eden::ToQStr(Eden::IntToHex8(Core->Bundle[Idx]->SwapPage)));
+    ui->MemCodeT1->setText(Eden::ToQStr(Eden::IntToHex8(Core->Bundle[Idx]->CodeLoc_)));
+    ui->MemCodeT2->setText(Eden::ToQStr(Eden::IntToHex8(Core->Bundle[Idx]->CodeSize)));
+    ui->MemDataT1->setText(Eden::ToQStr(Eden::IntToHex8(Core->Bundle[Idx]->DataLoc_)));
+    ui->MemDataT2->setText(Eden::ToQStr(Eden::IntToHex8(Core->Bundle[Idx]->DataSize)));
+    ui->LibraryT->setText(Eden::ToQStr(Core->Bundle[Idx]->LibFiles));
+    ui->DescrT->setPlainText(Eden::ToQStr(Eden::MultilineDecode(Core->Bundle[Idx]->Descr)));
+    GuiEvt();
+    ui->BundleItemFileT->setText(Eden::ToQStr(Core->Bundle[Idx]->BundleFile));
+    ui->BundleItemDescT->setText(Eden::ToQStr(Core->Bundle[Idx]->BundleDesc));
+
+    string X = AppWindowTitle;
+    setWindowTitle(Eden::ToQStr(X + " - " + Core->Bundle[Idx]->BundleFile));
+}
+
+void MainWindow::BundleItemSet()
+{
+    int Idx = Core->BundleIndex;
+    Core->Bundle[Idx]->ViewCmd = Eden::ToStr(ui->ViewCommandT->text());
+    Core->Bundle[Idx]->Engine = ui->EngineT1->currentIndex();
+    Core->Bundle[Idx]->MemMode = ui->EngineT2->currentIndex();
+    Core->Bundle[Idx]->CompileCommand = Eden::ToStr(ui->CommandT->text());
+    Core->Bundle[Idx]->ProgFileSrc = Eden::ToStr(ui->FileNameT1->text());
+    Core->Bundle[Idx]->ProgFileBin = Eden::ToStr(ui->FileNameT2->text());
+    Core->Bundle[Idx]->SwapPage = Eden::HexToInt(Eden::ToStr(ui->MemSwapT->text()));
+    Core->Bundle[Idx]->CodeLoc_ = Eden::HexToInt(Eden::ToStr(ui->MemCodeT1->text()));
+    Core->Bundle[Idx]->CodeSize = Eden::HexToInt(Eden::ToStr(ui->MemCodeT2->text()));
+    Core->Bundle[Idx]->DataLoc_ = Eden::HexToInt(Eden::ToStr(ui->MemDataT1->text()));
+    Core->Bundle[Idx]->DataSize = Eden::HexToInt(Eden::ToStr(ui->MemDataT2->text()));
+    Core->Bundle[Idx]->LibFiles = Eden::ToStr(ui->LibraryT->text());
+    Core->Bundle[Idx]->Descr = Eden::MultilineEncode(Eden::ToStr(ui->DescrT->toPlainText()));
+}
+
+void MainWindow::CoreInvoke(uchar Idx, uchar Param1, uchar Param2)
+{
+    switch (Param1)
+    {
+        case 0:
+            {
+                uchar StatusX = Core->GetStatusI(Param2);
+                uchar StatusResult = 2;
+                switch (StatusX)
+                {
+                    case 0:
+                    case 2:
+                    case 3:
+                        StatusResult = 0;
+                        break;
+                    case 1:
+                        StatusResult = 1;
+                        break;
+                }
+                Core->Bundle[Idx]->SM->CoreInvokeWait = StatusResult;
+            }
+            break;
+        case 1:
+            {
+                Core->Bundle[Idx]->SM->CoreInvokeWait = ExecStart(Param2);
+            }
+            break;
+    }
+}
+
+void MainWindow::on_MemFileLoad_clicked()
+{
+    string FileName = "";
+    QString FileNameX = QFileDialog::getOpenFileName(this, "Load file to memory", Core->LastPath, "Files (*.*)");
+    Core->SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
+    {
+        FileName = Eden::ToStr(FileNameX);
+    }
+
+    if (FileName != "")
+    {
+        int MemAddr = Eden::ToInt(Core->InputBox(this, "Address", "Load from file", "0"));
+        int MemSize = Eden::ToInt(Core->InputBox(this, "Size", "Load from file", "65536"));
+        if ((MemAddr >= 0) && ((MemAddr + MemSize) <= 65536) && (MemSize > 0))
+        {
+            if (Eden::FileExists(FileName))
+            {
+                int SizeX = Eden::FileSize(FileName);
+                if (MemSize > SizeX)
+                {
+                    MemSize = SizeX;
+                }
+                if (MemSize > 0)
+                {
+                    fstream FS(FileName, ios::binary | ios::in);
+                    if (FS.is_open())
+                    {
+                        uchar * Temp = NEWARR(uchar, uchar[MemSize]);
+                        FS.read((char*)Temp, MemSize);
+                        uchar * TempM = NULL;
+                        uchar * TempX = NULL;
+                        int Idx = Core->BundleIndex;
+                        Core->MemBuffer_->PrepareBuf(Idx);
+                        TempM = Core->MemBuffer_->BufRaw[Idx];
+                        TempX = Core->MemBuffer_->BufOpW[Idx];
+                        for (int I = 0; I < MemSize; I++)
+                        {
+                            TempM[MemAddr + I] = Temp[I];
+                            TempX[MemAddr + I] = 1;
+                        }
+                        DELARR(uchar, Temp);
+                        FS.close();
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::on_MemFileSave_clicked()
+{
+    string FileName = "";
+    QString FileNameX = QFileDialog::getSaveFileName(this, "Save image from memory", Core->LastPath, "Files (*.*)");
+    Core->SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
+    {
+        FileName = Eden::ToStr(FileNameX);
+    }
+
+    if (FileName != "")
+    {
+        int MemAddr = Eden::ToInt(Core->InputBox(this, "Address", "Save to file", "0"));
+        int MemSize = Eden::ToInt(Core->InputBox(this, "Size", "Save to file", "65536"));
+        if ((MemAddr >= 0) && ((MemAddr + MemSize) <= 65536) && (MemSize > 0))
+        {
+            fstream FS(FileName, ios::binary | ios::out);
+            if (FS.is_open())
+            {
+                uchar * Temp = NEWARR(uchar, uchar[MemSize]);
+                uchar * TempM = NULL;
+                uchar * TempX = NULL;
+                int Idx = Core->BundleIndex;
+
+                Core->MemBuffer_->PrepareBuf(Idx);
+                TempM = Core->MemBuffer_->BufRaw[Idx];
+                TempX = Core->MemBuffer_->BufOpR[Idx];
+                for (int I = 0; I < MemSize; I++)
+                {
+                    Temp[I] = TempM[MemAddr + I];
+                    TempX[MemAddr + I] = 1;
+                }
+                FS.write((char*)Temp, MemSize);
+                DELARR(uchar, Temp);
+                FS.close();
+            }
+        }
+    }
+}
+
+void MainWindow::on_BundleNew_clicked()
+{
+    Core->BundleFileName = "";
+    for (int I = 0; I < Core->BundleCount; I++)
+    {
+        Core->Bundle[I]->Init();
+    }
+    BundleRefresh();
+}
+
+void MainWindow::on_BundleOpen_clicked()
+{
+    string FileName = "";
+    QString X = BundFileExt;
+    QString FileNameX = QFileDialog::getOpenFileName(this, "Open bundle", Core->LastPath, "Files (*." + X + ")");
+    Core->SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
+    {
+        FileName = Eden::ToStr(FileNameX);
+    }
+    if ((FileName != "") && Eden::FileExists(FileName))
+    {
+        Core->BundleFileName = FileName;
+        for (int I = 0; I < Core->BundleCount; I++)
+        {
+            Core->Bundle[I]->Init();
+        }
+
+        EdenClass::ConfigFile Sch;
+        Sch.FileLoad(FileName);
+        int I = Sch.ParamGetI("Number");
+        if (I > Core->BundleCount)
+        {
+            I = Core->BundleCount;
+        }
+
+        int Idx = Core->BundleIndex;
+        for (int I = 0; I < Core->BundleCount; I++)
+        {
+            Core->Bundle[I]->BundleFile = Sch.ParamGetS("File" + Eden::ToStr(I));
+            Core->Bundle[I]->BundleDesc = Sch.ParamGetS("Desc" + Eden::ToStr(I));
+            Core->BundleIndex = I;
+            ProjectOpen(Core->Bundle[I]->BundleFile, false, true);
+        }
+        Core->BundleIndex = Idx;
+        BundleItemGet();
+        BundleRefresh();
+    }
+}
+
+void MainWindow::on_BundleSave_clicked()
+{
+    if (Core->BundleFileName == "")
+    {
+        on_BundleSaveAs_clicked();
+    }
+    else
+    {
+        string FileName = Core->BundleFileName;
+        EdenClass::ConfigFile Sch;
+        Sch.ParamClear();
+        Sch.ParamSet("Number", Core->BundleCount);
+        for (int I = 0; I < Core->BundleCount; I++)
+        {
+            Sch.ParamSet("File" + Eden::ToStr(I), Core->Bundle[I]->BundleFile);
+            Sch.ParamSet("Desc" + Eden::ToStr(I), Core->Bundle[I]->BundleDesc);
+        }
+        Sch.FileSave(FileName);
+        BundleItemGet();
+    }
+}
+
+void MainWindow::on_BundleSaveAs_clicked()
+{
+    string FileName = "";
+    QString X = BundFileExt;
+    QString FileNameX = QFileDialog::getSaveFileName(this, "Save program", Core->LastPath, "Files (*." + X + ")");
+    Core->SaveLastPath(FileNameX, false);
+    if (!FileNameX.isEmpty())
+    {
+        FileName = Eden::ToStr(FileNameX);
+        FileName = Eden::FileExtension(FileName, BundFileExt);
+        Core->BundleFileName = FileName;
+        on_BundleSave_clicked();
+    }
+}
+
+void MainWindow::on_BundleItemUp_clicked()
+{
+    int Idx = Core->BundleIndex;
+    if (Idx > 0)
+    {
+        ProjectItem * BundleTemp = Core->Bundle[Idx];
+        Core->Bundle[Idx] = Core->Bundle[Idx - 1];
+        Core->Bundle[Idx - 1] = BundleTemp;
+        BundleRefresh();
+        ui->BundleList->setCurrentRow(Idx - 1);
+    }
+}
+
+void MainWindow::on_BundleItemDown_clicked()
+{
+    int Idx = Core->BundleIndex;
+    if (Idx < 255)
+    {
+        ProjectItem * BundleTemp = Core->Bundle[Idx];
+        Core->Bundle[Idx] = Core->Bundle[Idx + 1];
+        Core->Bundle[Idx + 1] = BundleTemp;
+        BundleRefresh();
+        ui->BundleList->setCurrentRow(Idx + 1);
+    }
+}
+
+void MainWindow::on_BundleList_currentRowChanged(int currentRow)
+{
+    Core->BundleIndex = currentRow;
+    BundleItemGet();
+}
+
+void MainWindow::on_BundleItemDescT_textEdited(const QString &arg1)
+{
+    Core->Bundle[Core->BundleIndex]->BundleDesc = Eden::ToStr(arg1);
+    BundleRefresh();
 }

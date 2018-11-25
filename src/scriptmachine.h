@@ -8,18 +8,25 @@
 #include "iospreadsheet.h"
 #include "iograph.h"
 #include "binary.h"
+#include "membuffer.h"
+#include "filehandle.h"
 
 #define IOConsoleCmd 4
 #define IOSpreadsheetCmd 32
 #define IOGraphCmd 60
+#define IOGraphTextCmd 80
 
-class ScriptMachine
+
+class ScriptMachine : public QObject
 {
+    Q_OBJECT
 public:
     ScriptMachine();
     virtual ~ScriptMachine();
 
+    MemBuffer * MemBuffer_;
 
+    uchar BundleIndex;
 
     uchar * MemData;
     uchar * MemProg;
@@ -28,6 +35,7 @@ public:
     uchar MemMapP[65536];
     uchar MemMapC[65536];
 
+    FileHandle * FileHandle_;
 
     void MemSet(ushort Addr, uchar Val);
     void MemSet(ushort AddrH, ushort AddrL, uchar Val);
@@ -84,6 +92,9 @@ public:
     IOGraph * IOGraph_[4];
 
     string GetStatus();
+    uchar StatusC = 0;
+
+    volatile uchar CoreInvokeWait;
 private:
     char ValGetSC(int Addr);
     uchar ValGetUC(int Addr);
@@ -95,10 +106,11 @@ private:
     ulong ValGetUL(int Addr);
     double ValGetF(int Addr);
     void ValPut(int Addr, double Val);
-    void PrintChar(char X);
-    uchar StatusC = 0;
+
 protected:
     string ErrorStatus = "";
+signals:
+    void CoreInvoke(uchar Idx, uchar Param1, uchar Param2);
 };
 
 #endif // SCRIPTMACHINE_H

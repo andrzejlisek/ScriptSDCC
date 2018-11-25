@@ -154,6 +154,11 @@ bool ScriptMachine::ProgWorking()
             int IONum = MemData[SwapPage] & b00000011;
             switch(MemData[SwapPage] & b11111100)
             {
+            default:
+                ErrorStatus = "Unsupported command " + Eden::ToStr(MemData[SwapPage]);
+                MemData[SwapPage] = 255;
+                StatusC = 5;
+                return false;
             case IOConsoleCmd + 0:
                 IOConsole_[IONum]->Clear();
                 break;
@@ -162,10 +167,10 @@ bool ScriptMachine::ProgWorking()
                     uchar CmdX = MemData[SwapPage + 1];
                     switch(CmdX)
                     {
-                        case 0: IOConsole_[IONum]->Print(IOBuffer.BufS1); break;
-                        case 1: IOConsole_[IONum]->Print(IOBuffer.BufU1); break;
-                        case 2: IOConsole_[IONum]->Print((int)IOBuffer.BufS1); break;
-                        case 3: IOConsole_[IONum]->Print((int)IOBuffer.BufU1); break;
+                        case 0: IOConsole_[IONum]->Print((int)IOBuffer.BufS1); break;
+                        case 1: IOConsole_[IONum]->Print((int)IOBuffer.BufU1); break;
+                        case 2: IOConsole_[IONum]->Print(IOBuffer.BufS1); break;
+                        case 3: IOConsole_[IONum]->Print(IOBuffer.BufU1); break;
                         case 4: IOConsole_[IONum]->Print(IOBuffer.BufS2); break;
                         case 5: IOConsole_[IONum]->Print(IOBuffer.BufU2); break;
                         case 6: IOConsole_[IONum]->Print(IOBuffer.BufS2); break;
@@ -298,16 +303,198 @@ bool ScriptMachine::ProgWorking()
                     IOGraph_[IONum]->Plot(ValX, ValY, ValZ, MemData[SwapPage + 2], MemData[SwapPage + 3], MemData[SwapPage + 4]);
                 }
                 break;
+            case IOGraphCmd + 16:
+                if (MemData[SwapPage + 1] == 0)
+                {
+                    IOGraph_[IONum]->Triangle();
+                }
+                else
+                {
+                    IOGraph_[IONum]->Line(MemData[SwapPage + 1]);
+                }
+                break;
+
+            case IOGraphTextCmd + 0:
+                {
+                    IOGraph_[IONum]->TextBack = ((MemData[SwapPage + 1] & 2) > 0) ? true : false;
+                    IOGraph_[IONum]->TextFore = ((MemData[SwapPage + 1] & 1) > 0) ? true : false;
+                    IOGraph_[IONum]->TextColorR0 = MemData[SwapPage + 2];
+                    IOGraph_[IONum]->TextColorG0 = MemData[SwapPage + 3];
+                    IOGraph_[IONum]->TextColorB0 = MemData[SwapPage + 4];
+                    IOGraph_[IONum]->TextColorR = MemData[SwapPage + 5];
+                    IOGraph_[IONum]->TextColorG = MemData[SwapPage + 6];
+                    IOGraph_[IONum]->TextColorB = MemData[SwapPage + 7];
+                }
+                break;
+            case IOGraphTextCmd + 4:
+                {
+                    uchar CmdX = MemData[SwapPage + 1];
+                    double ValX = 0;
+                    double ValY = 0;
+                    double ValZ = 0;
+                    switch(CmdX)
+                    {
+                        case 0: ValX = ValGetSC(0x10); ValY = ValGetSC(0x18); ValZ = ValGetSC(0x20); break;
+                        case 1: ValX = ValGetUC(0x10); ValY = ValGetUC(0x18); ValZ = ValGetUC(0x20); break;
+                        case 4: ValX = ValGetSS(0x10); ValY = ValGetSS(0x18); ValZ = ValGetSS(0x20); break;
+                        case 5: ValX = ValGetUS(0x10); ValY = ValGetUS(0x18); ValZ = ValGetUS(0x20); break;
+                        case 6: ValX = ValGetSI(0x10); ValY = ValGetSI(0x18); ValZ = ValGetSI(0x20); break;
+                        case 7: ValX = ValGetUI(0x10); ValY = ValGetUI(0x18); ValZ = ValGetUI(0x20); break;
+                        case 8: ValX = ValGetSL(0x10); ValY = ValGetSL(0x18); ValZ = ValGetSL(0x20); break;
+                        case 9: ValX = ValGetUL(0x10); ValY = ValGetUL(0x18); ValZ = ValGetUL(0x20); break;
+                        case 10: ValX = ValGetF(0x10); ValY = ValGetF(0x18); ValZ = ValGetF(0x20); break;
+                    }
+                    int X0 = ValGetSS(0x28);
+                    int Y0 = ValGetSS(0x30);
+                    IOGraph_[IONum]->TextSet(ValX, ValY, ValZ, X0, Y0);
+                }
+                break;
+            case IOGraphTextCmd + 8:
+                {
+                    uchar CmdX = MemData[SwapPage + 1];
+                    string Raw = "";
+                    switch(CmdX)
+                    {
+                        case 0: Raw = Eden::ToStr((int)IOBuffer.BufS1); break;
+                        case 1: Raw = Eden::ToStr((int)IOBuffer.BufU1); break;
+                        case 2: Raw = IOBuffer.BufS1; break;
+                        case 3: Raw = IOBuffer.BufU1; break;
+                        case 4: Raw = Eden::ToStr(IOBuffer.BufS2); break;
+                        case 5: Raw = Eden::ToStr(IOBuffer.BufU2); break;
+                        case 6: Raw = Eden::ToStr(IOBuffer.BufS2); break;
+                        case 7: Raw = Eden::ToStr(IOBuffer.BufU2); break;
+                        case 8: Raw = Eden::ToStr(IOBuffer.BufS4); break;
+                        case 9: Raw = Eden::ToStr(IOBuffer.BufU4); break;
+                        case 10: Raw = Eden::ToStr(IOBuffer.BufF); break;
+                    }
+                    IOGraph_[IONum]->TextPrint(Raw);
+                }
+                break;
+            case IOGraphTextCmd + 12:
+                {
+                    IOGraph_[IONum]->TextPrint(TextBuff.str());
+                }
+                break;
             }
         }
         else
         {
             switch (MemData[SwapPage])
             {
+                default:
+                    ErrorStatus = "Unsupported command " + Eden::ToStr(MemData[SwapPage]);
+                    MemData[SwapPage] = 255;
+                    StatusC = 5;
+                    return false;
+
+                case 236:
+                    {
+                        MemData[SwapPage + 1] = FileHandle_->FileOpen(MemData[SwapPage + 1], TextBuff.str(), MemData[SwapPage + 2]);
+                    }
+                    break;
+                case 237:
+                    {
+                        MemData[SwapPage + 1] = FileHandle_->FileClose(MemData[SwapPage + 1]);
+                    }
+                    break;
+                case 238:
+                    {
+                        IOBuffer.BufU4 = FileHandle_->FileSize((MemData[SwapPage + 1]));
+                    }
+                    break;
+                case 239:
+                    {
+                        MemData[SwapPage + 1] = FileHandle_->FileSetPos(MemData[SwapPage + 1], IOBuffer.BufU4);
+                    }
+                    break;
+                case 240:
+                    {
+                        IOBuffer.BufU4 = FileHandle_->FileGetPos((MemData[SwapPage + 1]));
+                    }
+                    break;
+                case 241:
+                    {
+                        uint Addr = (((uint)(MemData[SwapPage + 3])) << 8) + ((uint)(MemData[SwapPage + 4]));
+                        uint Size = (((uint)(MemData[SwapPage + 5])) << 8) + ((uint)(MemData[SwapPage + 6]));
+                        MemBuffer_->PrepareBuf(MemData[SwapPage + 2]);
+                        MemData[SwapPage + 1] = FileHandle_->DataGet(MemData[SwapPage + 1], MemBuffer_->BufRaw[MemData[SwapPage + 2]], MemBuffer_->BufOpW[MemData[SwapPage + 2]], Addr, Size);
+                    }
+                    break;
+                case 242:
+                    {
+                        uint Addr = (((uint)(MemData[SwapPage + 3])) << 8) + ((uint)(MemData[SwapPage + 4]));
+                        uint Size = (((uint)(MemData[SwapPage + 5])) << 8) + ((uint)(MemData[SwapPage + 6]));
+                        MemBuffer_->PrepareBuf(MemData[SwapPage + 2]);
+                        MemData[SwapPage + 1] = FileHandle_->DataPut(MemData[SwapPage + 1], MemBuffer_->BufRaw[MemData[SwapPage + 2]], MemBuffer_->BufOpR[MemData[SwapPage + 2]], Addr, Size);
+                    }
+                    break;
+
+                case 243:
+                    {
+                        uchar BufN = MemData[SwapPage + 1];
+                        MemBuffer_->Clear(BufN);
+                    }
+                    break;
+                case 244:
+                    {
+                        uchar BufN = MemData[SwapPage + 1];
+                        int BufAddr = ValGetUS(0x10);
+                        int ProgAddr = ValGetUS(0x18);
+                        int Size = ValGetUS(0x20);
+                        if (MemBuffer_->Get(BufN, BufAddr, ProgAddr, Size, MemData, MemMapW))
+                        {
+                            MemData[SwapPage + 1] = 1;
+                        }
+                        else
+                        {
+                            MemData[SwapPage + 1] = 0;
+                        }
+                    }
+                    break;
+                case 245:
+                    {
+                        uchar BufN = MemData[SwapPage + 1];
+                        int BufAddr = ValGetUS(0x10);
+                        int ProgAddr = ValGetUS(0x18);
+                        int Size = ValGetUS(0x20);
+                        if (MemBuffer_->Set(BufN, BufAddr, ProgAddr, Size, MemData, MemMapR))
+                        {
+                            MemData[SwapPage + 1] = 1;
+                        }
+                        else
+                        {
+                            MemData[SwapPage + 1] = 0;
+                        }
+                    }
+                    break;
+
+                case 246:
+                    {
+                        uchar CmdX = MemData[SwapPage + 1];
+                        CoreInvokeWait = 255;
+                        emit CoreInvoke(BundleIndex, 0, CmdX);
+                        while (CoreInvokeWait == 255)
+                        {
+                        }
+                        MemData[SwapPage + 1] = CoreInvokeWait;
+                    }
+                    break;
+                case 247:
+                    {
+                        uchar CmdX = MemData[SwapPage + 1];
+                        CoreInvokeWait = 255;
+                        emit CoreInvoke(BundleIndex, 1, CmdX);
+                        while (CoreInvokeWait == 255)
+                        {
+                        }
+                        MemData[SwapPage + 1] = CoreInvokeWait;
+                    }
+                    break;
+
                 case 248:
                     TextBuffS = TextBuff.str();
                     TextBuffI = 0;
-                    IOBuffer.BufU1 = Min(TextBuffS.size(), 255);
+                    IOBuffer.BufU2 = Min(TextBuffS.size(), 65535);
                     break;
                 case 249:
                     if (TextBuffI < TextBuffS.size())

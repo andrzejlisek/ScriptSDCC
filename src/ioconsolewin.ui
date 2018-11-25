@@ -90,6 +90,16 @@
    <header>qplaintexteditkey.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>Show0</tabstop>
+  <tabstop>Show1</tabstop>
+  <tabstop>Show2</tabstop>
+  <tabstop>Show3</tabstop>
+  <tabstop>ConsoleClear</tabstop>
+  <tabstop>ConsoleCopy</tabstop>
+  <tabstop>ConsolePaste</tabstop>
+  <tabstop>ConsoleScreen</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

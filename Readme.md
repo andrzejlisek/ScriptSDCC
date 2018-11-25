@@ -1,13 +1,18 @@
-# ScriptSDCC 1.0
+# ScriptSDCC 2.0
 
-## General purpose and description
-ScriptSDCC is machine code interpreter compatible with MCS51 and Z180 architecture. It uses 64kB code and data memory, which can be common or separated, but on Z80/Z180 architecture, separated  memory is not usable, because Z80/Z180 processor is not designed to work on separated data and program memory.
-ScriptSDCC requires Windows system with SDCC compiler installed with add SDCC path to environment variable PATH. This compiler is invoked during compiling and running script.
-ScriptSDCC is designed to be compatible at the source level with MCS51 and Z180, so in most cases, the same source can be compiled and run on either MSC51 or Z180 without changes. The only IO interface is the special address space with 256 bytes length called as swap memory. The IO interfaces existing in real processors are not supported. Interrupts are not supported, so interrupt functions can not be called.
+## Description and general purpose
+ScriptSDCC is machine code interpreter compatible with MCS51 and Z180 architectures. It uses 64kB code and data memory, which can be common or separated, but on Z80/Z180 architecture, separated  memory is not usable, because Z80/Z180 processor is not designed to work on separated data and program memory.
+ScriptSDCC requires Windows or Linux system with SDCC compiler installed with add SDCC path to environment variable PATH. This compiler is invoked during compiling and running script.
+ScriptSDCC is designed to be compatible at the script source level with MCS51 and Z180, so in most cases, the same source can be compiled and run on either MSC51 or Z180 without changes. The only IO interface is the special address space with 256 bytes length called as swap memory. The IO interfaces existing in real processors are not supported. Interrupts are not supported, so interrupt functions can not be called.
 ScriptSDCC has three input/output modules, each module exists in 4 independent instances. This modules are console, spreadsheet and graph. You can watch the same instance of I/O module in several windows, especially when you want to display graph in several perspectives.
 
-## Project configuration
-On the __Project__ tab, you can create/edit ScriptSDCC project using following data:
+## Bundle tab
+You can define bundle, which consists of maximum 256 independed scripts. This is usable to run one script from another script or run several script simultaneously.
+
+Each script is run in independed virtual machine, but IO and memory buffer is shared, so the first script can generate data, which are aquired by second script.
+
+## Script tab
+You can create/edit ScriptSDCC script definition using following data:
 * __Description__ - User text intended to describe project, this text does not affect in script compiling and running.
 * __View/Edit command__ - System command to view od edit project. For example, using this command you can open source file in text editor or display project folder.
 * __Source file name__ - You have to input source *.c file with path. The path can be absolute or relative to project file. The file will be copied into temporary directory before compiling.
@@ -61,23 +66,11 @@ For script performance reasons, all commands with I/O ale multiples of 4 and the
 
 The value type byte is at Swap+1 address and the value is at Swap+8 and can occupy 8 bytes. The returned value is in Swap+8.
 
+All commands are used in the standard library (C header files), the usage can be easily dedicated by function code analysis, these function are very simple. All functions are described in comments.
+
 ## Script running and performance
-After compiling, you can run script by clicking __Run__ button. During script running, you can click __Stop__ button to stop running, then you can click __Run__ button to continue script running. The __Reset__ button resets virtual machine to allow run script again from beginning.
+After compiling, you can run script by clicking __Run/Continue__ button. During script running, you can click __Stop__ button to stop running, then you can click __Run/Continue__ button to continue script running. The __Reset__ button resets virtual machine to allow run script again from beginning.
 During script running, on the __Compile and run__ tab, you can watch current script status, total executed instructions and number of instructions per second.
-
-## Basic commands
-For the script running, you can use following commands:
-* __252__ - Get number of instruction after last 252 command. This command get unsigned char value as power of 10, by which the value will be divided. The returned value is unsigned long.
-* __253__ - Stop script without possibility to resume. It is recommended to use at the script end.
-* __254__ - Stop script with possibility to resume, it can pause script to allow user to input or read any information. After this, you can run script.
-* __255__ - Stop script due to error, it is not intended to use by user.
-
-## Internal text buffer
-Some actions needs text string, so ScriptSDCC has internal text buffer with read and write possibility. Internal text buffer can be operated by commands:
-* __248__ - Get text buffer content length as unsigned char and reset iterator.
-* __249__ - Get current text buffer character as signed char and advance the iterator.
-* __250__ - Clear text buffer.
-* __251__ - Add character (signed char) to text buffer.
 
 ## Console
 The first I/O module is text console. It can print any text and get characters from keyboard using buffer. It is usable to print program running messages and get simple choices as menu selection or working mode.
@@ -87,16 +80,8 @@ You can control console using following buttons:
 * __Copy__ - Copy selected text in console to clipboard.
 * __Paste__ - Paste text from clipboard as keystrokes.
 
-Console can be controlled by following commands:
-* __4__ - Clear console.
-* __8__ - Print value of defined type.
-* __12__ - Set float representation, value is signed char, positive value means fixed form, negative value means scientific form. The value can be from -120 to 120.
-* __16__ - Get character from keyboard buffer as signed char.
-* __20__ - Get character from keyboard buffer as unsigned char.
-* __24__ - Clear keyboard buffer.
-
 ## Spreadsheet
-The second I/O module it the spreadsheet as a simple table consists of 256 rows and 256 columns. This module is not intended to replace spreadsheet application from office suites, so it not supports formula calculation. Each cell contains text value, but it is possible to get or set number value.
+The second I/O module it the spreadsheet are a simple table, which consists of 256 rows and 256 columns. This module is not intended to replace spreadsheet application from office suites, so it not supports formula calculation. Each cell contains text value, but it is possible to get or set number value.
 Spreadsheet is mainly intended to enter input data and read output data. You can manipulate using buttons:
 * __0__, __1__, __2__, __3__ - Display instances.
 * __Clear__ - Clear selected area.
@@ -107,53 +92,64 @@ Spreadsheet is mainly intended to enter input data and read output data. You can
 * __Col add__ - Add one column.
 * __Col rem__ - Remove one column.
 
-For commands with one cell, the row is defined in Swap+2 byte, and the column is defined in Swap+3 byte.
-Spreadsheet can be controlled by commands:
-* __32__ - Get value from cell.
-* __36__ - Get text from cell to internal text buffer.
-* __40__ - Set value to cell.
-* __44__ - Set text from internal text buffer to cell.
-* __48__ - Cell range operation.
-
-Cell range operation has following parameters:
-* __Swap+1__ - Operation type: 0 - clear, 1 - add row, 2 - remove row, 3 - add column, 4 - remove column.
-* __Swap+2__ - First row.
-* __Swap+3__ - First column.
-* __Swap+4__ - Last row.
-* __Swap+5__ - Last column.
-
-This operation is the same, as clicking Cleat, Row add, Row rem, Col add, Col rem buttons.
-
 ## Graph
-The third I/O module is graph, which can visualize 2D or 3D graphics. It can displays points and polygonal chains including line segments. There is 256 draw threads, the 0 thread is intended to draw only points and the other threads are intended to draw polygonal chain. Using threads, you can draw e few polygonal chains simultaneously. To draw polygonal chain, you have to select any thread other than 0 and reset this thread. Then, you can set points of the chain one by one. If you want to draw another chain in the same thread, you have to reset this thread.
-The graph can be used by following commands:
-* __60__ - Clear.
-* __64__ - Set thread to Swap+1.
-* __68__ - Reset thread.
-* __72__ - Set point using coordinates of any type, defined as Swap+1 and color using three unsigned byte value. The Color values (red, green and blue) are defined in Swap+2, Swap+3 and Swap+4 bytes. The Coordinates (X, Y and Z) are defined in Swap+16, Swap+24 and Swap+32 values.
+The third I/O module is graph, which can visualize 2D or 3D graphics. It can displays points, polygonal chains including line segments and triangles. There is 256 draw threads, the 0 thread is intended to draw points and triangles. The other threads are intended to draw polygonal chain. Using threads, you can draw a few polygonal chains simultaneously. To draw polygonal chain, you have to select any thread other than 0 and reset this thread. Then, you can set points of the chain one by one. If you want to draw another chain in the same thread, you have to reset this thread.
+To draw a triangle, tou have to plot at least three points and convert them to triangle using appropiate command. You can use the same points more than once, everytime there will be converted the last three plotted points. For example, you can draw tetragon by plotting the first three points (the second and third point must be a diagonal ends), convert them to first triangle, after that draw fouth point and convert to triangle again. The second triangle will be used second, third and fourth poins, so the second and third points will be used to both triangles.
 
 The graph module has following display controls:
 * __0__, __1__, __2__, __3__ - Display instances.
+* __Basic__, __Scale__, __Rotate__, __Light__ - Show or hide toolbar.
+
+Basic toolbar:
 * __Clear__ - Clear graph.
-* __Background__ - Set background color.
+* __Color__ - Set background color.
 * __Point size__ - Set point size in pixels of plotted points.
 * __Line size__ - Set line size in pixels of plotted line segments.
+* __Surfaces__ - Fill triangle surfaces.
+* __Text__ - Diaplay text labels.
+* __Inv__ - Invert draw order at the same X, Y, Z display coordinates, this option can change artifacts in some cases.
+* __Value change__ - Set value change step in all spin controls in other toolbars.
+* __Render to file__ - Render picture to specified PNG file. The picture size can be specified.
 
-The following parameters are three values, each is for X, Y and Z coordinates:
+Scale/pan toolbar, the following parameters has three values, each is for X, Y and Z coordinates:
 * __Scale X__ - Scale coordinate value to X value on screen.
 * __Scale Y__ - Scale coordinate value to Y value on screen.
 * __Scale Z__ - Scale coordinate value to Z value in Z-buffer.
 * __Scale XYZ__ - Scale coordinate proportionally on screen to change a scale. Values Scale X, Scale Y and Scale Z are multiplied by ScaleXYZ value. The product is in one millionth parts.
-* __Offset data__ - Offset in one millionths of source to plot.
-* __Offset render__ - Offset in pixels on screen of rendering graphics.
+* __Pan data__ - Offset in one millionths of source to plot.
+* __Pan render__ - Offset in pixels on screen of rendering graphics.
+
+Rotate toolbar:
+* __Rot data__ - Transform source data by specified axis order and rotate around axes in degrees.
+* __Rot draw__ - Transform drawing data by specified axis order and rotate around axes in degrees.
+
+Light toolbar:
+* __Lighting__ - Specify pseudo-lighting algorithm.
+* __Azimuth__, __Elevation__ - Set position of lighting line.
+* __Color position__ - Set position on lighting line (distance algorithm) or on angle (angle algorithm), where objects has original colors.
+* __Distance 1__, __Distance 2__ - Set position/angle in front of object and behind the object, where color is faded to background (positive value) or faded to inverted background (negative value). When value is set to 0, color will not be faded.
+
+## Graph lighting - Distance algorithm
+This algorithm uses color fade settings on lighting line. This line always contains the zero point (X=0, Y=0, Z=0) on screen. For each pixel in space, the color will be based on distance between zero point and plane perpendicular to lighting line.
+The color position and distance parameters defines pixel color related to position on lighting line.
+
+## Graph lighting - Angle algorithm
+This algorithm user color fade related to object angle to lighting line. The color of points will be intact, because point has no dimensions.
+For lines, lighting angle is measured in plane, which is both parallel to calculated line and lighting line. User observes line as always lit.
+For triangles, lighting angle is measuret between triangle plane and lighting line. User can observe lit or unlit side. Shadows projected by other triangles are not simulated.
+Color position 0 means color of line or triangle, which is parallel to lighting line. Color position means object angle, where has original color. The distances determines angle, where color fades to background or inverted background.
+
+## Memory buffer
+ScriptSDCC allows to use 256 memory buffer items, each are 65536 bytes long. Script can copy data from internal data memory to buffer and from buffer to internal data memory. Script can also copy data from file to buffer and from buffer to file. In whole ScriptSDCC session, there can be open 256 files simultaneously, each script can access to all memory buffer items and all file handles.
 
 ## Memory map
-On the __Memory map__ tab you can see CODE and DATA memory occupation. Each pixel on the map represents one byte. Using __H+__, __V+__, __H-__ and __V-__ buttons, you can zoom the map horizontally and vertically. If you click __CODE__ button, the script code occupation and code reads will be displayed, and if you click __DATA__ button, it will be displayed all reads and writes made during script running.
+On the __Memory map__ tab you can see CODE or DATA or BUFF memory occupation. Each pixel on the map represents one byte. Using __H+__, __V+__, __H-__ and __V-__ buttons, you can zoom the map horizontally and vertically. If you click __CODE__ button, the script code occupation and code reads will be displayed, and if you click __DATA__ button, it will be displayed all reads and writes made during script running.
 The colors of blank bytes means following:
 * __Blank__ - Byte out of swap, code and data space.
 * __Gray__ - Byte in swap space.
 * __Dark blue__ - Byte in code space.
 * __Dark yellow__ - Byte in data space.
+If you see BUFF memory, the will be displayed shared memory buffer at the same number, whis is selected on Bundle tab. Below memory map, you can see file name attached to file handler. For example, if you select third item on __Bundle__ tab, you can see third memory buffer occuparion and third file handle assignment despite of script, item, memory buffer item and file handle are independed.
 
 After compiling and during script running, colors may be changed as follows by setting maximum channel value:
 * __Green__ - Read byte.
@@ -174,7 +170,7 @@ Directly after compilation, there is applied some patch in beginning of memory t
 * __Z180__ - There are written two bytes to &quot;0101&quot; and &quot;0102&quot;. These bytes is the stack pointer just after program beginning in little endian order. Practically, the first byte is always &quot;00&quot;. Without the patch, the stack for data will be begin always from &quot;FFFF&quot;.
 
 ## Project management
-Project can be saved to file. In file, there will be saved all parameters from __Project__ tab. At the top of the tab, there list of favoutite projects, which providest fast and easy access to frequently used projects. You can manage projects using following buttons:
+Project can be saved to file. In file, there will be saved all parameters from __Script__ tab. At the top of the tab, there list of favoutite projects, which providest fast and easy access to frequently used projects. You can manage projects using following buttons:
 * __New__ - New project (clears all fields and current file name).
 * __Open__ - Open project from file.
 * __Save__ - Save project to current file. If file name is not specified, ScriptSDCC will ask for file name.
@@ -186,10 +182,14 @@ Project can be saved to file. In file, there will be saved all parameters from _
 At the first run, you have to set settings on the __Settings__ tab. These settings are following:
 * __Timer interval__ - Time in milliseconds between two refreshes. To take effect of changing this value, you have to restart SDCCScript.
 * __SDCC command__ - Set SDCC compiler invocation command. This setting usually can be &quot;sdcc&quot;, but in certain installations, you have to input this command with full path.
-* __Library directory__ - Path to directory, which contains files, which can be included as library (mentioned in __Library files__ field on __Project__ tab).
+* __Library directory__ - Path to directory, which contains files, which can be included as library (mentioned in __Library files__ field on __Script__ tab).
 * __Temporary directory__ - Path to directory with read and write permission, which is used during compilation. Before compilation, all files placed in temporary directory will be removed.
 * __Console font__ - Font name and size used to display text in console window.
 * __Spreadsheet font__ - Font name and size used to display text in spreadsheet window.
+* __Graph font file__ - Bitmap file containing font, which is used in text rendering in graph window.
+
+## Graph font file
+The font file, which can be used for labels in Graph, is a bitmap file. The bitmap width must be a multiplier of 256, the bitmap height has nor constraint. The font is monospaced font, which consists of 256 glyphs, the Unicode or similar standards are not supported. The pixels can be white and black, but the color is detected based on color brightness in picture. To get 8x8 font, you have to prepare picture 2048 pixels width and 8 pixels height. If picture is not valid, the labels will not displayed.
 
 ## Default project template
 You can create default template, which will used for new projects. To create this, tou can have to save current project as &quot;default.sdc&quot; and plate it in application directory. After this, if you start ScriptSDCC or create new project using __New__ button, this file will be loaded, but project will be treated as new, unsaved project.

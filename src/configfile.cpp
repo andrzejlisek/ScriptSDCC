@@ -137,6 +137,7 @@ namespace EdenClass
                 if (S.at(II) == '=')
                 {
                     X = II;
+                    break;
                 }
             }
             if (X > 0)
@@ -197,28 +198,28 @@ namespace EdenClass
 
     string ConfigFile::ParamGetS(string Name)
     {
-        string X;
+        string X = "";
         ParamGet(Name, X);
         return X;
     }
 
     int ConfigFile::ParamGetI(string Name)
     {
-        int X;
+        int X = 0;
         ParamGet(Name, X);
         return X;
     }
 
     long long ConfigFile::ParamGetL(string Name)
     {
-        long long X;
+        long long X = 0;
         ParamGet(Name, X);
         return X;
     }
 
     bool ConfigFile::ParamGetB(string Name)
     {
-        bool X;
+        bool X = false;
         ParamGet(Name, X);
         return X;
     }

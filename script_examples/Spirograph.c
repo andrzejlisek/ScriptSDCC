@@ -25,24 +25,22 @@ void main()
  r = 56;
  h = r * 1.0;
 
- sheet_clear(0, 0, 0, 255, 255);
- graph_clear(0);
- graph_clear(1);
+ sheet_clear_whole(0);
+
+ cell_set_string(0, 0, 0, "Delta");
+ cell_set_string(0, 1, 0, "Period");
+ cell_set_string(0, 2, 0, "Radius 1");
+ cell_set_string(0, 3, 0, "Radius 2");
+ cell_set_string(0, 4, 0, "Size");
+ cell_set_int(0, 0, 1, Delta);
+ cell_set_int(0, 1, 1, Period);
+ cell_set_int(0, 2, 1, R);
+ cell_set_int(0, 3, 1, r);
+ cell_set_int(0, 4, 1, Size);
 
  while (1)
  {
-  cell_set_string(0, 0, 0, "Delta");
-  cell_set_string(0, 1, 0, "Period");
-  cell_set_string(0, 2, 0, "Radius 1");
-  cell_set_string(0, 3, 0, "Radius 2");
-  cell_set_string(0, 4, 0, "Size");
-  cell_set_int(0, 0, 1, Delta);
-  cell_set_int(0, 1, 1, Period);
-  cell_set_int(0, 2, 1, R);
-  cell_set_int(0, 3, 1, r);
-  cell_set_int(0, 4, 1, Size);
-
-  stop();
+  graph_clear(0);
 
   Delta = cell_get_int(0, 0, 1);
   Period = cell_get_int(0, 1, 1);
@@ -50,11 +48,7 @@ void main()
   r = cell_get_int(0, 3, 1);
   Size = cell_get_int(0, 4, 1);
 
-  graph_clear(0);
-  graph_clear(1);
-
   graph_thread(0, 1);
-  graph_thread(1, 1);
 
   DeltaF = Delta;
   SizeF = Size;
@@ -69,7 +63,7 @@ void main()
    X = (R - r) * cosf(t) + h * cosf(((R - r) * t) / r);
    Y = (R - r) * sinf(t) + h * sinf(((R - r) * t) / r);
    graph_plot_float(0, X * Factor, Y * Factor, 0, 255, 255, 255);
-   graph_plot_long(1, X * Factor, Y * Factor, 0, 255, 255, 255);
   }
+  stop();
  }
 }

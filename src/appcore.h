@@ -4,26 +4,33 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include "scriptmachine.h"
-#include "scriptmachinemcs51.h"
-#include "scriptmachinez180.h"
 #include "eden.h"
+#include "projectitem.h"
+#include "membuffer.h"
+#include "graphfont.h"
+#include <QInputDialog>
+#include "configfile.h"
+#include "filehandle.h"
 
 #define ProjFileExt "sdc"
+#define BundFileExt "sdb"
 
 using namespace std;
 
 class AppCore
 {
 public:
+    QString LastPath = "";
+    string InputBox(QWidget *Parent, string Query, string Title, string Default);
+    void SaveLastPath(QString X, bool OpenDir);
+
     AppCore();
     ~AppCore();
-    bool CompileGood = false;
-    string ProgCompile(string LibFiles);
-    void ProgRun();
-    void ProgAbort();
-    void ProgReset();
-    ScriptMachine * SM = NULL;
+
+    MemBuffer * MemBuffer_;
+
+    GraphFont * GraphFont_;
+    string GraphFontFile;
 
     string ConsoleFontName = "Courier New";
     int ConsoleFontSize = 12;
@@ -31,44 +38,33 @@ public:
     int SpreadsheetFontSize = 12;
 
 
-    string LibDir = "";
-    string TempDir = "";
-    string ProgFileSrc = "";
-    string ProgFileBin = "";
-    string ProgCmd = "sdcc";
 
     string GetStatus(llong &CommandCounter);
+    uchar GetStatusI(int BundleIndex_);
 
     IOConsole * IOConsole_[4];
     IOSpreadsheet * IOSpreadsheet_[4];
     IOGraph * IOGraph_[4];
-
-    int Engine = 0;
-    int MemMode = 0;
-    string CompileCommand = "";
 
     QImage * MemMap = NULL;
     int MemMapH = 1;
     int MemMapV = 1;
     int MemMapHOffset = 0;
     int MemMapVOffset = 0;
+    bool MemMapBuff = false;
     bool MemMapData = false;
     QImage * MemMapRepaint();
 
-    int SwapPage = 0;
-    int CodeLoc = 0;
-    int CodeSize = 0;
-    int DataLoc = 0;
-    int DataSize = 0;
 
-    string CurrentFileName = "";
+    int BundleIndex = 0;
+    ProjectItem * Bundle[256];
+    int BundleCount = 256;
 
-private:
-    bool FileCopy(string SrcFile, string DstDir);
-    void ClearTemp();
-    void SysRun(string Cmd);
-    string GetFilePath(string FileName);
-    string GetFileName(string FileName);
+    FileHandle * FileHandle_;
+
+    string BundleFileName = "";
+
+    void Compile();
 };
 
 #endif // APPCORE_H

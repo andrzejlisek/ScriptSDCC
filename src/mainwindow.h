@@ -14,7 +14,7 @@
 #include "configfile.h"
 #include <QFileDialog>
 
-#define AppWindowTitle "ScriptSDCC 1.0"
+#define AppWindowTitle "ScriptSDCC 2.0"
 
 using namespace std;
 
@@ -119,31 +119,53 @@ private slots:
 
     void on_SetSheetFontS_valueChanged(int arg1);
 
+    void CoreInvoke(uchar Idx, uchar Param1, uchar Param2);
+
+    void on_MemMapDispBuff_clicked();
+
+    void on_MemFileLoad_clicked();
+
+    void on_MemFileSave_clicked();
+
+    void on_BundleNew_clicked();
+
+    void on_BundleOpen_clicked();
+
+    void on_BundleSave_clicked();
+
+    void on_BundleSaveAs_clicked();
+
+    void on_BundleItemUp_clicked();
+
+    void on_BundleItemDown_clicked();
+
+    void on_BundleList_currentRowChanged(int currentRow);
+
+    void on_BundleItemDescT_textEdited(const QString &arg1);
+
 signals:
     void GuiEvtS();
 
 private:
-    bool BtnCompile = true;
-    bool BtnReset = false;
-    bool BtnRun = false;
-    bool BtnAbort = false;
-
     bool TimerEventEnabled = false;
     Ui::MainWindow *ui;
     QTimer Timer;
 
     llong LastInstrCount = 0;
 
-    void ExecThr();
+    int ExecStart(int Idx);
+    void ExecThr(int Idx);
     void CompileSchemeRefresh();
     void SchemeSort();
     void ProjectSort();
 
-    void ProjectOpen(string FileName, bool Template);
+    void ProjectOpen(string FileName, bool Template, bool NoRefresh);
     void ProjectSave(string FileName);
-    QString LastPath = "";
-    void SaveLastPath(QString X, bool OpenDir);
     bool SetEventEnabled = false;
+    void BundleRefresh();
+
+    void BundleItemGet();
+    void BundleItemSet();
 };
 
 #endif // MAINWINDOW_H

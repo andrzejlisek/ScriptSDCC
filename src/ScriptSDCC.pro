@@ -17,9 +17,13 @@ SOURCES += main.cpp\
     qmouselabel.cpp \
     qplaintexteditkey.cpp \
     mainwindow.cpp \
+    membuffer.cpp \
+    graphfont.cpp \
     appcore.cpp \
     scriptmachine.cpp \
     scriptmachinemcs51.cpp \
+    scriptmachinez180.cpp \
+    projectitem.cpp \
     ioconsolewin.cpp \
     ioconsole.cpp \
     iospreadsheet.cpp \
@@ -27,7 +31,7 @@ SOURCES += main.cpp\
     iographwin.cpp \
     iograph.cpp \
     configfile.cpp \
-    scriptmachinez180.cpp
+    filehandle.cpp
 
 HEADERS  += mainwindow.h \
     eden.h \
@@ -35,9 +39,13 @@ HEADERS  += mainwindow.h \
     objmem.h \
     qmouselabel.h \
     qplaintexteditkey.h \
+    membuffer.h \
+    graphfont.h \
     appcore.h \
     scriptmachine.h \
     scriptmachinemcs51.h \
+    scriptmachinez180.h \
+    projectitem.h \
     ioconsolewin.h \
     ioconsole.h \
     iospreadsheet.h \
@@ -45,7 +53,7 @@ HEADERS  += mainwindow.h \
     iographwin.h \
     iograph.h \
     configfile.h \
-    scriptmachinez180.h
+    filehandle.h
 
 FORMS    += mainwindow.ui \
     ioconsolewin.ui \

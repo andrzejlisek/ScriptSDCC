@@ -1,9 +1,11 @@
+// Header file "_.h" is generated during compilation.
+// This file defines macros:
+// "mem_swap" - address in data memory reserved for swap (256 bytes)
+// "engine_mcs51" or "engine_z180" without value - depends on selected engine
+// "mem_common" or "mem_separated" without value - depends on selected CODE/DATA memory type
 #include "_.h"
 
-#define _uchar ((unsigned char volatile *)0)
-#define _char ((char volatile *)0)
-#define _uint ((unsigned int volatile *)0)
-#define _int ((int volatile *)0)
+// Integer number type one-word names
 #define uchar unsigned char
 #define uint unsigned int
 #define ulong unsigned long
@@ -11,17 +13,24 @@
 #define llong long long
 #define ullong unsigned long long
 
+// Arrays giving absolute data memory access
+#define _uchar ((uchar volatile *)0)
+#define _char ((char volatile *)0)
+#define _uint ((uint volatile *)0)
+#define _int ((int volatile *)0)
+
+// Replacement for MCS51-specified keywords to "mem_near" and "mem_far", which can be used also on Z180
 #ifdef engine_z180
- #define mem_near
- #define mem_far
+ #define _near
+ #define _far
 #endif
 #ifdef engine_mcs51
- #define mem_near __idata
- #define mem_far __xdata
+ #define _near __idata
+ #define _far __xdata
 #endif
 
-
-mem_far __at (mem_swap + 8) union core_io_union
+// Union for every data type, which is used to set and get values in swap memory
+_far __at (mem_swap + 8) union core_io_union
 {
  char RawS[8];
  uchar RawU[8];
@@ -36,7 +45,9 @@ mem_far __at (mem_swap + 8) union core_io_union
  float BufF;
 } core_io;
 
-
+// Copys 8 bytes from one location to other location, used in swap memory
+// Src - source address
+// Dst - destination address
 void core_value_copy(uint Src, uint Dst)
 {
  _uchar[Dst + 0] = _uchar[Src + 0];
@@ -49,6 +60,9 @@ void core_value_copy(uint Src, uint Dst)
  _uchar[Dst + 7] = _uchar[Src + 7];
 }
 
+// Returns number of instructions from running or last prgcounter invocation
+// div - Exponent of 10 to be a divider
+// Retunrs: Number of instructions divided by 10^div
 ulong prgcounter(uchar div)
 {
  core_io.BufU1 = div;
@@ -56,16 +70,14 @@ ulong prgcounter(uchar div)
  return core_io.BufU4;
 }
 
-void stop()
-{
- _uchar[mem_swap] = 254;
-}
+// Stops script and allows user to continue by clicking "Run" button
+#define stop() _uchar[mem_swap] = 254;
 
-void end()
-{
- _uchar[mem_swap] = 253;
-}
+// Stops script without continuation possibility
+#define end() _uchar[mem_swap] = 253;
 
+// Sets specified string to string buffer
+// V - Pointer to null-terminated string
 void string_set(char * V)
 {
  uchar I = 0;
@@ -78,11 +90,14 @@ void string_set(char * V)
  }
 }
 
-void string_get(char * V, uchar S)
+// Gets string buffer contents to specified string
+// V - Pointer to null-terminated string
+// S - Maximum string length, the longer string will be truncated
+void string_get(char * V, ushort S)
 {
- uchar I, N;
+ ushort I, N;
  _uchar[mem_swap] = 248;
- N = core_io.BufU1;
+ N = core_io.BufU2;
  if (N > S)
  {
   N = S;

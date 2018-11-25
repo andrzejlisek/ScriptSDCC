@@ -1,6 +1,6 @@
 ViewCommand=
-FileNameSource=CubeOctahedron.c
-FileNameBinary=CubeOctahedron.ihx
+FileNameSource=GraphRot.c
+FileNameBinary=GraphRot.ihx
 Engine=0
 Memory=1
 Command=-mmcs51 --model-large --code-loc 0x%CODELOC%00 --code-size 0x%CODESIZE%00 --xram-loc 0x%DATALOC%00 --xram-size 0x%DATASIZE%00
@@ -9,5 +9,5 @@ MemCodeSize=7D
 MemDataLoc=80
 MemDataSize=80
 MemSwapLoc=02
-LibraryFiles=core.h|graph.h|mathx.h
-Description="Draws cube on Graph 0, Octahedron on Graph 1 and solid similar to ball on Graph 2."
+LibraryFiles=core.h|spreadsheet.h|graph.h|graphtext.h|mathx.h
+Description="Draws the wheel of colors with labels on Graph 0, input parameters are on Spreadsheet 0."
