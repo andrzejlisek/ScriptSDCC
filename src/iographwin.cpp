@@ -1793,34 +1793,106 @@ void IOGraphWin::Refresh(bool ToFile, string FileName, int ScrW, int ScrH)
                             int FontH = Core->GraphFont_->FontH;
                             bool TextB = Gr->GraphDef[I].TextB;
                             bool TextF = Gr->GraphDef[I].TextF;
+                            int CharNumState = 0;
+                            int CharNum, CharNumX;
                             for (int II = 0; II < TextLen; II++)
                             {
-                                uchar * Glyph = Core->GraphFont_->FontGlyph[(uchar)Text[II]];
-                                int P = 0;
-                                int DrawXX = DrawX + III + Gr->GraphDef[I].TextX;
-                                int DrawYY = DrawY - Gr->GraphDef[I].TextY;
-                                for (int YY = 0; YY < FontH; YY++)
+                                CharNumX = (uchar)Text[II];
+                                if (CharNumState == 0)
                                 {
-                                    for (int XX = 0; XX < FontW; XX++)
+                                    CharNum = 32;
+                                    // 0x0000 - 0x007F
+                                    if ((CharNumX & b10000000) == 0)
                                     {
-                                        if (Glyph[P])
+                                        CharNum = CharNumX;
+                                    }
+                                    else
+                                    {
+                                        // 0x0080 - 0x07FF
+                                        if ((CharNumX & b11100000) == b11000000)
                                         {
-                                            if (TextF)
-                                            {
-                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, Gr->GraphDef[I].ColorR, Gr->GraphDef[I].ColorG, Gr->GraphDef[I].ColorB);
-                                            }
+                                            CharNumState = 1;
+                                            CharNum = (CharNumX & b00011111);
                                         }
                                         else
                                         {
-                                            if (TextB)
+                                            // 0x0800 - 0xFFFF
+                                            if ((CharNumX & b11110000) == b11100000)
                                             {
-                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, Gr->GraphDef[I].ColorR0, Gr->GraphDef[I].ColorG0, Gr->GraphDef[I].ColorB0);
+                                                CharNumState = 2;
+                                                CharNum = (CharNumX & b00001111);
+                                            }
+                                            else
+                                            {
+                                                // 0x10000 do 0x1FFFFF
+                                                if ((CharNumX & b11111000) == b11110000)
+                                                {
+                                                    CharNumState = 3;
+                                                    CharNum = (CharNumX & b00001111);
+                                                }
+                                                else
+                                                {
+                                                    // 0x200000 do 0x3FFFFFF
+                                                    if ((CharNumX & b11111100) == b11111000)
+                                                    {
+                                                        CharNumState = 4;
+                                                        CharNum = (CharNumX & b00001111);
+                                                    }
+                                                    else
+                                                    {
+                                                        // 0x4000000 do 0x7FFFFFFF
+                                                        if ((CharNumX & b11111110) == b11111100)
+                                                        {
+                                                            CharNumState = 5;
+                                                            CharNum = (CharNumX & b00001111);
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
-                                        P++;
                                     }
                                 }
-                                III += FontW;
+                                else
+                                {
+                                    CharNumX = (CharNumX & b00111111);
+                                    CharNum = CharNum << 6;
+                                    CharNum = CharNum + CharNumX;
+                                    CharNum = CharNum & 65535;
+                                    CharNumState--;
+                                }
+
+                                if (CharNumState == 0)
+                                {
+                                    uchar * Glyph = Core->GraphFont_->FontGlyph[CharNum];
+                                    if (Glyph != NULL)
+                                    {
+                                        int P = 0;
+                                        int DrawXX = DrawX + III + Gr->GraphDef[I].TextX;
+                                        int DrawYY = DrawY - Gr->GraphDef[I].TextY;
+                                        for (int YY = 0; YY < FontH; YY++)
+                                        {
+                                            for (int XX = 0; XX < FontW; XX++)
+                                            {
+                                                if (Glyph[P])
+                                                {
+                                                    if (TextF)
+                                                    {
+                                                        DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, Gr->GraphDef[I].ColorR, Gr->GraphDef[I].ColorG, Gr->GraphDef[I].ColorB);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (TextB)
+                                                    {
+                                                        DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, Gr->GraphDef[I].ColorR0, Gr->GraphDef[I].ColorG0, Gr->GraphDef[I].ColorB0);
+                                                    }
+                                                }
+                                                P++;
+                                            }
+                                        }
+                                    }
+                                    III += FontW;
+                                }
                             }
                         }
                     }

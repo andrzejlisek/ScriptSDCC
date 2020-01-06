@@ -79,21 +79,21 @@ void main()
  cell_set_string(0, 1, 0, "Label distance:");
  cell_set_string(0, 2, 0, "Middle point:");
 
- cell_set_int(0, 0, 1, Radius);
- cell_set_int(0, 1, 1, Distance);
- cell_set_int(0, 2, 1, ColorR_);
- cell_set_int(0, 2, 2, ColorG_);
- cell_set_int(0, 2, 3, ColorB_);
+ cell_set_sint(0, 0, 1, Radius);
+ cell_set_sint(0, 1, 1, Distance);
+ cell_set_sint(0, 2, 1, ColorR_);
+ cell_set_sint(0, 2, 2, ColorG_);
+ cell_set_sint(0, 2, 3, ColorB_);
 
  while(1)
  {
   graph_clear(0);
 
-  Radius = cell_get_int(0, 0, 1);
-  Distance = cell_get_int(0, 1, 1);
-  ColorR_ = cell_get_int(0, 2, 1);
-  ColorG_ = cell_get_int(0, 2, 2);
-  ColorB_ = cell_get_int(0, 2, 3);
+  Radius = cell_get_sint(0, 0, 1);
+  Distance = cell_get_sint(0, 1, 1);
+  ColorR_ = cell_get_sint(0, 2, 1);
+  ColorG_ = cell_get_sint(0, 2, 2);
+  ColorB_ = cell_get_sint(0, 2, 3);
 
 
   for (I = 0; I < 24; I++)

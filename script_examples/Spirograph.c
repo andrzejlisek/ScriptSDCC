@@ -32,21 +32,21 @@ void main()
  cell_set_string(0, 2, 0, "Radius 1");
  cell_set_string(0, 3, 0, "Radius 2");
  cell_set_string(0, 4, 0, "Size");
- cell_set_int(0, 0, 1, Delta);
- cell_set_int(0, 1, 1, Period);
- cell_set_int(0, 2, 1, R);
- cell_set_int(0, 3, 1, r);
- cell_set_int(0, 4, 1, Size);
+ cell_set_sint(0, 0, 1, Delta);
+ cell_set_sint(0, 1, 1, Period);
+ cell_set_sint(0, 2, 1, R);
+ cell_set_sint(0, 3, 1, r);
+ cell_set_sint(0, 4, 1, Size);
 
  while (1)
  {
   graph_clear(0);
 
-  Delta = cell_get_int(0, 0, 1);
-  Period = cell_get_int(0, 1, 1);
-  R = cell_get_int(0, 2, 1);
-  r = cell_get_int(0, 3, 1);
-  Size = cell_get_int(0, 4, 1);
+  Delta = cell_get_sint(0, 0, 1);
+  Period = cell_get_sint(0, 1, 1);
+  R = cell_get_sint(0, 2, 1);
+  r = cell_get_sint(0, 3, 1);
+  Size = cell_get_sint(0, 4, 1);
 
   graph_thread(0, 1);
 

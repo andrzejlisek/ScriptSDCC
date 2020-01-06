@@ -19,12 +19,14 @@ MainWindow::MainWindow(QWidget *parent) :
     string XTempDir = "temp";
     string XProgCmd = "sdcc";
 
+    XLibDir = Eden::MultilineEncode(XLibDir);
     Sch.ParamGet("LibDir", XLibDir);
+    XLibDir = Eden::MultilineDecode(XLibDir);
     Sch.ParamGet("TempDir", XTempDir);
     Sch.ParamGet("ProgCmd", XProgCmd);
     Sch.ParamGet("TimerInterval", TimerInterval);
 
-    ui->SetLibDirT->setText(Eden::ToQStr(XLibDir));
+    ui->SetLibDirT->setPlainText(Eden::ToQStr(XLibDir));
     ui->SetTempDirT->setText(Eden::ToQStr(XTempDir));
     ui->SetProgCommandT->setText(Eden::ToQStr(XProgCmd));
     ui->SetTimerT->setValue(TimerInterval);
@@ -44,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     SetEventEnabled = true;
     CommandCounterF = 100000 / TimerInterval;
 
-    XLibDir = Eden::CorrectDir(XLibDir);
+    //XLibDir = Eden::CorrectDir(XLibDir);
     XTempDir = Eden::CorrectDir(XTempDir);
 
     for (int I = 0; I < Core->BundleCount; I++)
@@ -105,7 +107,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     int N = CompileSchemeName.size();
     EdenClass::ConfigFile Sch;
     Sch.ParamClear();
-    Sch.ParamSet("LibDir", Eden::ToStr(ui->SetLibDirT->text()));
+    Sch.ParamSet("LibDir", Eden::MultilineEncode(Eden::ToStr(ui->SetLibDirT->toPlainText())));
     Sch.ParamSet("TempDir", Eden::ToStr(ui->SetTempDirT->text()));
     Sch.ParamSet("ProgCmd", Eden::ToStr(ui->SetProgCommandT->text()));
     Sch.ParamSet("TimerInterval", ui->SetTimerT->value());
@@ -176,25 +178,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_BtnCompile_clicked()
 {
-    int Idx = Core->BundleIndex;
     BundleItemSet();
-
-    Core->Compile();
-    QObject::connect(Core->Bundle[Idx]->SM, SIGNAL(CoreInvoke(uchar, uchar, uchar)), this, SLOT(CoreInvoke(uchar, uchar, uchar)));
-
-    ui->CompileMsgT->setPlainText(Eden::ToQStr(Core->Bundle[Idx]->CompileMsg));
-
-
-    if (Core->Bundle[Idx]->CompileGood)
-    {
-        Core->Bundle[Idx]->BtnRun = true;
-        Core->Bundle[Idx]->BtnReset = true;
-    }
-    else
-    {
-        Core->Bundle[Idx]->BtnRun = false;
-        Core->Bundle[Idx]->BtnReset = false;
-    }
+    ProgLoadCode(true);
     GuiEvt();
 }
 
@@ -225,7 +210,6 @@ int MainWindow::ExecStart(int Idx)
 void MainWindow::ExecThr(int Idx)
 {
     Core->Bundle[Idx]->ProgRun();
-
     Core->Bundle[Idx]->BtnCompile = true;
     Core->Bundle[Idx]->BtnRun = true;
     Core->Bundle[Idx]->BtnReset = true;
@@ -457,6 +441,19 @@ void MainWindow::on_MemMapDispBuff_clicked()
     Core->MemMapBuff = true;
 }
 
+void MainWindow::ProgLoadCode(bool CompileCode)
+{
+    int Idx = Core->BundleIndex;
+    if (Core->Bundle[Idx]->SM != NULL)
+    {
+        QObject::disconnect(Core->Bundle[Idx]->SM, SIGNAL(CoreInvoke(uchar, uchar, uchar)), this, SLOT(CoreInvoke(uchar, uchar, uchar)));
+    }
+    Core->Compile(CompileCode);
+    QObject::connect(Core->Bundle[Idx]->SM, SIGNAL(CoreInvoke(uchar, uchar, uchar)), this, SLOT(CoreInvoke(uchar, uchar, uchar)));
+
+    ui->CompileMsgT->setPlainText(Eden::ToQStr(Core->Bundle[Idx]->CompileMsg));
+}
+
 void MainWindow::ProjectOpen(string FileName, bool Template, bool NoRefresh)
 {
     if ((FileName != "") && Eden::FileExists(FileName))
@@ -469,6 +466,8 @@ void MainWindow::ProjectOpen(string FileName, bool Template, bool NoRefresh)
 
         EdenClass::ConfigFile CF;
         CF.FileLoad(FileName);
+        Core->Bundle[Idx]->ProgCode = CF.ParamGetS("ProgCode");
+        Core->Bundle[Idx]->CompileMsg = Eden::MultilineDecode(CF.ParamGetS("CompileMsg"));
         Core->Bundle[Idx]->ViewCmd = CF.ParamGetS("ViewCommand");
         Core->Bundle[Idx]->ProgFileSrc = CF.ParamGetS("FileNameSource");
         Core->Bundle[Idx]->ProgFileBin = CF.ParamGetS("FileNameBinary");
@@ -482,6 +481,10 @@ void MainWindow::ProjectOpen(string FileName, bool Template, bool NoRefresh)
         Core->Bundle[Idx]->SwapPage = Eden::HexToInt(CF.ParamGetS("MemSwapLoc"));
         Core->Bundle[Idx]->LibFiles = CF.ParamGetS("LibraryFiles");
         Core->Bundle[Idx]->Descr = CF.ParamGetS("Description");
+        ProgLoadCode(false);
+
+
+        GuiEvt();
         //ui->CompileSchemeT->setCurrentText("");
 
         if (!NoRefresh)
@@ -502,6 +505,8 @@ void MainWindow::ProjectSave(string FileName)
         BundleItemSet();
         EdenClass::ConfigFile CF;
         CF.ParamClear();
+        CF.ParamSet("ProgCode", Core->Bundle[Idx]->ProgCode);
+        CF.ParamSet("CompileMsg", Eden::MultilineEncode(Core->Bundle[Idx]->CompileMsg));
         CF.ParamSet("ViewCommand", Core->Bundle[Idx]->ViewCmd);
         CF.ParamSet("FileNameSource", Core->Bundle[Idx]->ProgFileSrc);
         CF.ParamSet("FileNameBinary", Core->Bundle[Idx]->ProgFileBin);
@@ -720,7 +725,7 @@ void MainWindow::GuiEvt()
 void MainWindow::on_ViewCommandB_clicked()
 {
     string X = Eden::ToStr(ui->ViewCommandT->text());
-    system(X.c_str());
+    Core->Bundle[Core->BundleIndex]->SysRun(X, false);
 }
 
 void MainWindow::on_ProjListAdd_clicked()
@@ -781,14 +786,6 @@ void MainWindow::on_SetProgCommandT_textEdited(const QString &arg1)
     if (SetEventEnabled)
     {
         Core->Bundle[Core->BundleIndex]->ProgCmd = Eden::ToStr(arg1);
-    }
-}
-
-void MainWindow::on_SetLibDirT_textEdited(const QString &arg1)
-{
-    if (SetEventEnabled)
-    {
-        Core->Bundle[Core->BundleIndex]->LibDir = Eden::CorrectDir(Eden::ToStr(arg1));
     }
 }
 
@@ -859,6 +856,7 @@ void MainWindow::BundleRefresh()
 void MainWindow::BundleItemGet()
 {
     int Idx = Core->BundleIndex;
+    ui->CompileMsgT->setPlainText(Eden::ToQStr(Core->Bundle[Idx]->CompileMsg));
     ui->ViewCommandT->setText(Eden::ToQStr(Core->Bundle[Idx]->ViewCmd));
     ui->EngineT1->setCurrentIndex(Core->Bundle[Idx]->Engine);
     ui->EngineT2->setCurrentIndex(Core->Bundle[Idx]->MemMode);
@@ -1141,4 +1139,12 @@ void MainWindow::on_BundleItemDescT_textEdited(const QString &arg1)
 {
     Core->Bundle[Core->BundleIndex]->BundleDesc = Eden::ToStr(arg1);
     BundleRefresh();
+}
+
+void MainWindow::on_SetLibDirT_textChanged()
+{
+    if (SetEventEnabled)
+    {
+        Core->Bundle[Core->BundleIndex]->LibDir = Eden::ToStr(ui->SetLibDirT->toPlainText());
+    }
 }

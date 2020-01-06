@@ -33,35 +33,35 @@ void main()
 
   for (J = 0; J <= (Size - I); J++)
   {
-   print_char_t(1, ' ');
-   print_string(0, "      ");
+   console_print_schar_t(1, ' ');
+   console_print_string(0, "      ");
   }
   for (J = 0; J <= (I + 1); J++)
   {
-   print_string(0, "  ");
-   if (T1[J] < 1000000000) { print_char_t(0, ' '); }
-   if (T1[J] < 100000000)  { print_char_t(0, ' '); }
-   if (T1[J] < 10000000)   { print_char_t(0, ' '); }
-   if (T1[J] < 1000000)    { print_char_t(0, ' '); }
-   if (T1[J] < 100000)     { print_char_t(0, ' '); }
-   if (T1[J] < 10000)      { print_char_t(0, ' '); }
-   if (T1[J] < 1000)       { print_char_t(0, ' '); }
-   if (T1[J] < 100)        { print_char_t(0, ' '); }
-   if (T1[J] < 10)         { print_char_t(0, ' '); }
+   console_print_string(0, "  ");
+   if (T1[J] < 1000000000) { console_print_schar_t(0, ' '); }
+   if (T1[J] < 100000000)  { console_print_schar_t(0, ' '); }
+   if (T1[J] < 10000000)   { console_print_schar_t(0, ' '); }
+   if (T1[J] < 1000000)    { console_print_schar_t(0, ' '); }
+   if (T1[J] < 100000)     { console_print_schar_t(0, ' '); }
+   if (T1[J] < 10000)      { console_print_schar_t(0, ' '); }
+   if (T1[J] < 1000)       { console_print_schar_t(0, ' '); }
+   if (T1[J] < 100)        { console_print_schar_t(0, ' '); }
+   if (T1[J] < 10)         { console_print_schar_t(0, ' '); }
    
-   print_ulong(0, T1[J]);
+   console_print_ulong(0, T1[J]);
    if ((T1[J] % 2) == 0)
    {
-    print_string(1, "  ");
+    console_print_string(1, "  ");
    }
    else
    {
-    print_string(1, "[]");
+    console_print_string(1, "[]");
    }
   }
 
-  print_line(0);
-  print_line(1);
+  console_print_line(0);
+  console_print_line(1);
  }
  end();
 }

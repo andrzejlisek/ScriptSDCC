@@ -14,7 +14,7 @@
 #include "configfile.h"
 #include <QFileDialog>
 
-#define AppWindowTitle "ScriptSDCC 2.0"
+#define AppWindowTitle "ScriptSDCC 3.0"
 
 using namespace std;
 
@@ -47,6 +47,8 @@ public:
 
     vector<string> ProjectListName;
     vector<string> ProjectListFile;
+
+    void ProgLoadCode(bool CompileCode);
 
 private slots:
     void TimerEvent();
@@ -107,8 +109,6 @@ private slots:
 
     void on_SetProgCommandT_textEdited(const QString &arg1);
 
-    void on_SetLibDirT_textEdited(const QString &arg1);
-
     void on_SetTempDirT_textEdited(const QString &arg1);
 
     void on_SetConsFontN_textEdited(const QString &arg1);
@@ -142,6 +142,8 @@ private slots:
     void on_BundleList_currentRowChanged(int currentRow);
 
     void on_BundleItemDescT_textEdited(const QString &arg1);
+
+    void on_SetLibDirT_textChanged();
 
 signals:
     void GuiEvtS();

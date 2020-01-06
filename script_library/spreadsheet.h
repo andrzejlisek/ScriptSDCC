@@ -4,17 +4,17 @@
 // N - Spreadsheet number
 // R - Row number
 // C - Colun number
-// cell_get_char_v, cell_get_char_v - gets value from number
-// cell_get_char_t, cell_get_char_t - gets value from 1-character string
-char   cell_get_char_v( uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  0; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS1; }
+// cell_get_schar_v, cell_get_uchar_v - gets value from number
+// cell_get_schar_t, cell_get_uchar_t - gets value from 1-character string
+schar  cell_get_schar_v(uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  0; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS1; }
 uchar  cell_get_uchar_v(uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  1; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufU1; }
-char   cell_get_char_t( uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  2; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS1; }
+schar  cell_get_schar_t(uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  2; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS1; }
 uchar  cell_get_uchar_t(uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  3; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufU1; }
-short  cell_get_short(  uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  4; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS2; }
+sshort cell_get_sshort( uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  4; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS2; }
 ushort cell_get_ushort( uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  5; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufU2; }
-int    cell_get_int(    uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  6; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS2; }
+sint   cell_get_sint(   uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  6; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS2; }
 uint   cell_get_uint(   uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  7; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufU2; }
-long   cell_get_long(   uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  8; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS4; }
+slong  cell_get_slong(  uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  8; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufS4; }
 ulong  cell_get_ulong(  uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] =  9; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufU4; }
 float  cell_get_float(  uchar N, uchar R, uchar C) { _uchar[mem_swap + 1] = 10; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; _uchar[mem_swap] = IOSpreadsheetCmd + 0 + N; return core_io.BufF;  }
 
@@ -36,17 +36,17 @@ void cell_get_string(uchar N, uchar R, uchar C, char * V, ushort S)
 // N - Spreadsheet number
 // R - Row number
 // C - Colun number
-// cell_set_char_v, cell_set_char_v - sets value as number
-// cell_set_char_t, cell_set_char_t - sets value as 1-character string
-void cell_set_char_v( uchar N, uchar R, uchar C, char V)   { char V_ = V;   _uchar[mem_swap + 1] =  0; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
+// cell_set_schar_v, cell_set_uchar_v - sets value as number
+// cell_set_schar_t, cell_set_uchar_t - sets value as 1-character string
+void cell_set_schar_v(uchar N, uchar R, uchar C, schar V)  { schar V_ = V;  _uchar[mem_swap + 1] =  0; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_uchar_v(uchar N, uchar R, uchar C, uchar V)  { uchar V_ = V;  _uchar[mem_swap + 1] =  1; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufU1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
-void cell_set_char_t( uchar N, uchar R, uchar C, char V)   { char V_ = V;   _uchar[mem_swap + 1] =  2; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
+void cell_set_schar_t(uchar N, uchar R, uchar C, schar V)  { schar V_ = V;  _uchar[mem_swap + 1] =  2; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_uchar_t(uchar N, uchar R, uchar C, uchar V)  { uchar V_ = V;  _uchar[mem_swap + 1] =  3; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufU1 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
-void cell_set_short(  uchar N, uchar R, uchar C, short V)  { short V_ = V;  _uchar[mem_swap + 1] =  4; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
+void cell_set_sshort( uchar N, uchar R, uchar C, sshort V) { sshort V_ = V; _uchar[mem_swap + 1] =  4; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_ushort( uchar N, uchar R, uchar C, ushort V) { ushort V_ = V; _uchar[mem_swap + 1] =  5; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufU2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
-void cell_set_int(    uchar N, uchar R, uchar C, int V)    { int V_ = V;    _uchar[mem_swap + 1] =  6; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
+void cell_set_sint(   uchar N, uchar R, uchar C, sint V)   { sint V_ = V;   _uchar[mem_swap + 1] =  6; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_uint(   uchar N, uchar R, uchar C, uint V)   { uint V_ = V;   _uchar[mem_swap + 1] =  7; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufU2 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
-void cell_set_long(   uchar N, uchar R, uchar C, long V)   { long V_ = V;   _uchar[mem_swap + 1] =  8; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS4 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
+void cell_set_slong(  uchar N, uchar R, uchar C, slong V)  { slong V_ = V;  _uchar[mem_swap + 1] =  8; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufS4 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_ulong(  uchar N, uchar R, uchar C, ulong V)  { ulong V_ = V;  _uchar[mem_swap + 1] =  9; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufU4 = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 void cell_set_float(  uchar N, uchar R, uchar C, float V)  { float V_ = V;  _uchar[mem_swap + 1] = 10; _uchar[mem_swap + 2] = R; _uchar[mem_swap + 3] = C; core_io.BufF  = V_; _uchar[mem_swap] = IOSpreadsheetCmd + 8 + N; }
 

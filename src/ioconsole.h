@@ -6,6 +6,7 @@
 #include "eden.h"
 #include <iomanip>
 #include <queue>
+#include <mutex>
 
 using namespace std;
 
@@ -35,6 +36,7 @@ public:
     ConChar InputCharGet();
     void InputClear();
 private:
+    mutex MTX;
     bool Changed;
     stringstream SS;
     queue<ConChar> InputCharQueue;

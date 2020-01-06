@@ -166,12 +166,12 @@ void main()
  {
   stop();
 
-  Xmin = cell_get_long(0, 4, 1);
-  Xmax = cell_get_long(0, 4, 2);
-  Ymin = cell_get_long(0, 4, 4);
-  Ymax = cell_get_long(0, 4, 5);
-  Xstep = cell_get_long(0, 5, 1);
-  Ystep = cell_get_long(0, 5, 3);
+  Xmin = cell_get_slong(0, 4, 1);
+  Xmax = cell_get_slong(0, 4, 2);
+  Ymin = cell_get_slong(0, 4, 4);
+  Ymax = cell_get_slong(0, 4, 5);
+  Xstep = cell_get_slong(0, 5, 1);
+  Ystep = cell_get_slong(0, 5, 3);
 
   Color1R = cell_get_uchar_v(0, 7, 1);
   Color1G = cell_get_uchar_v(0, 7, 2);
@@ -231,16 +231,16 @@ void main()
      Val = Val_1 / Val_2;
      if ((Val >= ToleranceN) && (Val <= ToleranceP))
      {
-      graph_plot_int(0, X__, Y__, 0, Color1R, Color1G, Color1B);
+      graph_plot_sint(0, X__, Y__, 0, Color1R, Color1G, Color1B);
      }
      else
      {
-      graph_plot_int(0, X__, Y__, 0, Color0R, Color0G, Color0B);
+      graph_plot_sint(0, X__, Y__, 0, Color0R, Color0G, Color0B);
      }
     }
     else
     {
-     graph_plot_int(0, X__, Y__, 0, ColorXR, ColorXG, ColorXB);
+     graph_plot_sint(0, X__, Y__, 0, ColorXR, ColorXG, ColorXB);
     }
     X__++;
    }

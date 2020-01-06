@@ -300,27 +300,27 @@ QImage * AppCore::MemMapRepaint()
     return MemMap;
 }
 
-void AppCore::Compile()
+void AppCore::Compile(bool CompileCode)
 {
     int BundleIndex_ = BundleIndex;
-    Bundle[BundleIndex_]->ProgCompile();
-    if (Bundle[BundleIndex_]->CompileGood)
+    if (CompileCode)
     {
-        Bundle[BundleIndex_]->SM->BundleIndex = BundleIndex_;
-        Bundle[BundleIndex_]->SM->MemBuffer_ = MemBuffer_;
-        Bundle[BundleIndex_]->SM->FileHandle_ = FileHandle_;
-        Bundle[BundleIndex_]->SM->IOConsole_[0] = IOConsole_[0];
-        Bundle[BundleIndex_]->SM->IOConsole_[1] = IOConsole_[1];
-        Bundle[BundleIndex_]->SM->IOConsole_[2] = IOConsole_[2];
-        Bundle[BundleIndex_]->SM->IOConsole_[3] = IOConsole_[3];
-        Bundle[BundleIndex_]->SM->IOSpreadsheet_[0] = IOSpreadsheet_[0];
-        Bundle[BundleIndex_]->SM->IOSpreadsheet_[1] = IOSpreadsheet_[1];
-        Bundle[BundleIndex_]->SM->IOSpreadsheet_[2] = IOSpreadsheet_[2];
-        Bundle[BundleIndex_]->SM->IOSpreadsheet_[3] = IOSpreadsheet_[3];
-        Bundle[BundleIndex_]->SM->IOGraph_[0] = IOGraph_[0];
-        Bundle[BundleIndex_]->SM->IOGraph_[1] = IOGraph_[1];
-        Bundle[BundleIndex_]->SM->IOGraph_[2] = IOGraph_[2];
-        Bundle[BundleIndex_]->SM->IOGraph_[3] = IOGraph_[3];
+        Bundle[BundleIndex_]->ProgCompile();
     }
-    Bundle[BundleIndex_]->ProgCompileAfter();
+    Bundle[BundleIndex_]->ProgLoadCode();
+    Bundle[BundleIndex_]->SM->BundleIndex = BundleIndex_;
+    Bundle[BundleIndex_]->SM->MemBuffer_ = MemBuffer_;
+    Bundle[BundleIndex_]->SM->FileHandle_ = FileHandle_;
+    Bundle[BundleIndex_]->SM->IOConsole_[0] = IOConsole_[0];
+    Bundle[BundleIndex_]->SM->IOConsole_[1] = IOConsole_[1];
+    Bundle[BundleIndex_]->SM->IOConsole_[2] = IOConsole_[2];
+    Bundle[BundleIndex_]->SM->IOConsole_[3] = IOConsole_[3];
+    Bundle[BundleIndex_]->SM->IOSpreadsheet_[0] = IOSpreadsheet_[0];
+    Bundle[BundleIndex_]->SM->IOSpreadsheet_[1] = IOSpreadsheet_[1];
+    Bundle[BundleIndex_]->SM->IOSpreadsheet_[2] = IOSpreadsheet_[2];
+    Bundle[BundleIndex_]->SM->IOSpreadsheet_[3] = IOSpreadsheet_[3];
+    Bundle[BundleIndex_]->SM->IOGraph_[0] = IOGraph_[0];
+    Bundle[BundleIndex_]->SM->IOGraph_[1] = IOGraph_[1];
+    Bundle[BundleIndex_]->SM->IOGraph_[2] = IOGraph_[2];
+    Bundle[BundleIndex_]->SM->IOGraph_[3] = IOGraph_[3];
 }

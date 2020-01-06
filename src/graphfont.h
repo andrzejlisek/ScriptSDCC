@@ -13,7 +13,8 @@ public:
     bool FontExists;
     int FontW = 0;
     int FontH = 0;
-    uchar * FontGlyph[256];
+    uchar * FontGlyph[65536];
+    int FontGlyphC = 0;
 };
 
 #endif // GRAPHFONT_H

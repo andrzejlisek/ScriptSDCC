@@ -29,76 +29,76 @@ void main()
  graph_clear(1);
  graph_clear(2);
 
- graph_plot_int(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
- graph_plot_int(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
- graph_plot_int(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
  graph_triangle(0);
- graph_plot_int(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
- graph_triangle(0);
-
- graph_plot_int(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
- graph_plot_int(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
- graph_plot_int(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
- graph_triangle(0);
- graph_plot_int(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
+ graph_plot_sint(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
  graph_triangle(0);
 
- graph_plot_int(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
- graph_plot_int(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
- graph_plot_int(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
  graph_triangle(0);
- graph_plot_int(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
- graph_triangle(0);
-
- graph_plot_int(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
- graph_plot_int(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
- graph_plot_int(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
- graph_triangle(0);
- graph_plot_int(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
  graph_triangle(0);
 
- graph_plot_int(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
- graph_plot_int(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
- graph_plot_int(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 - H,   0,   0,   0);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
  graph_triangle(0);
- graph_plot_int(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
- graph_triangle(0);
-
- graph_plot_int(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
- graph_plot_int(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
- graph_plot_int(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
- graph_triangle(0);
- graph_plot_int(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
  graph_triangle(0);
 
+ graph_plot_sint(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
+ graph_triangle(0);
+ graph_plot_sint(0, 0 - H, 0 - H, 0 + H,   0,   0, 255);
+ graph_triangle(0);
+
+ graph_plot_sint(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
+ graph_plot_sint(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 + H, 255,   0, 255);
+ graph_triangle(0);
+ graph_plot_sint(0, 0 + H, 0 - H, 0 - H, 255,   0,   0);
+ graph_triangle(0);
+
+ graph_plot_sint(0, 0 + H, 0 + H, 0 + H, 255, 255, 255);
+ graph_plot_sint(0, 0 + H, 0 + H, 0 - H, 255, 255,   0);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 + H,   0, 255, 255);
+ graph_triangle(0);
+ graph_plot_sint(0, 0 - H, 0 + H, 0 - H,   0, 255,   0);
+ graph_triangle(0);
 
 
- graph_plot_int(1, 0,     0,     0 + H,   0,   0, 255);
- graph_plot_int(1, 0 + H, 0,     0,     255,   0,   0);
- graph_plot_int(1, 0,     0 + H, 0,       0, 255,   0);
+
+ graph_plot_sint(1, 0,     0,     0 + H,   0,   0, 255);
+ graph_plot_sint(1, 0 + H, 0,     0,     255,   0,   0);
+ graph_plot_sint(1, 0,     0 + H, 0,       0, 255,   0);
  graph_triangle(1);
- graph_plot_int(1, 0,     0,     0 - H,   0,   0, 255);
- graph_triangle(1);
-
- graph_plot_int(1, 0,     0,     0 + H,   0,   0, 255);
- graph_plot_int(1, 0 - H, 0,     0,     255,   0,   0);
- graph_plot_int(1, 0,     0 + H, 0,       0, 255,   0);
- graph_triangle(1);
- graph_plot_int(1, 0,     0,     0 - H,   0,   0, 255);
+ graph_plot_sint(1, 0,     0,     0 - H,   0,   0, 255);
  graph_triangle(1);
 
- graph_plot_int(1, 0,     0,     0 + H,   0,   0, 255);
- graph_plot_int(1, 0 + H, 0,     0,     255,   0,   0);
- graph_plot_int(1, 0,     0 - H, 0,       0, 255,   0);
+ graph_plot_sint(1, 0,     0,     0 + H,   0,   0, 255);
+ graph_plot_sint(1, 0 - H, 0,     0,     255,   0,   0);
+ graph_plot_sint(1, 0,     0 + H, 0,       0, 255,   0);
  graph_triangle(1);
- graph_plot_int(1, 0,     0,     0 - H,   0,   0, 255);
+ graph_plot_sint(1, 0,     0,     0 - H,   0,   0, 255);
  graph_triangle(1);
 
- graph_plot_int(1, 0,     0,     0 + H,   0,   0, 255);
- graph_plot_int(1, 0 - H, 0,     0,     255,   0,   0);
- graph_plot_int(1, 0,     0 - H, 0,       0, 255,   0);
+ graph_plot_sint(1, 0,     0,     0 + H,   0,   0, 255);
+ graph_plot_sint(1, 0 + H, 0,     0,     255,   0,   0);
+ graph_plot_sint(1, 0,     0 - H, 0,       0, 255,   0);
  graph_triangle(1);
- graph_plot_int(1, 0,     0,     0 - H,   0,   0, 255);
+ graph_plot_sint(1, 0,     0,     0 - H,   0,   0, 255);
+ graph_triangle(1);
+
+ graph_plot_sint(1, 0,     0,     0 + H,   0,   0, 255);
+ graph_plot_sint(1, 0 - H, 0,     0,     255,   0,   0);
+ graph_plot_sint(1, 0,     0 - H, 0,       0, 255,   0);
+ graph_triangle(1);
+ graph_plot_sint(1, 0,     0,     0 - H,   0,   0, 255);
  graph_triangle(1);
 
 
@@ -180,84 +180,84 @@ void main()
   Ang3 = (I + 2 * II) * angle_deg_rad;
   Ang4 = (I + 3 * II) * angle_deg_rad;
 
-  graph_plot_int(2,                0,   H,                0, C61R, C61G, C61B);
-  graph_plot_int(2, cosf(Ang1) * X51, Y51, sinf(Ang1) * X51, C51R, C51G, C51B);
-  graph_plot_int(2, cosf(Ang3) * X51, Y51, sinf(Ang3) * X51, C51R, C51G, C51B);
+  graph_plot_sint(2,                0,   H,                0, C61R, C61G, C61B);
+  graph_plot_sint(2, cosf(Ang1) * X51, Y51, sinf(Ang1) * X51, C51R, C51G, C51B);
+  graph_plot_sint(2, cosf(Ang3) * X51, Y51, sinf(Ang3) * X51, C51R, C51G, C51B);
   graph_triangle(2);
 
-  graph_plot_int(2,                0,  -H,                0, C62R, C62G, C62B);
-  graph_plot_int(2, cosf(Ang1) * X52, Y52, sinf(Ang1) * X52, C52R, C52G, C52B);
-  graph_plot_int(2, cosf(Ang3) * X52, Y52, sinf(Ang3) * X52, C52R, C52G, C52B);
+  graph_plot_sint(2,                0,  -H,                0, C62R, C62G, C62B);
+  graph_plot_sint(2, cosf(Ang1) * X52, Y52, sinf(Ang1) * X52, C52R, C52G, C52B);
+  graph_plot_sint(2, cosf(Ang3) * X52, Y52, sinf(Ang3) * X52, C52R, C52G, C52B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang1) * X51, Y51, sinf(Ang1) * X51, C51R, C51G, C51B);
-  graph_plot_int(2, cosf(Ang3) * X51, Y51, sinf(Ang3) * X51, C51R, C51G, C51B);
-  graph_plot_int(2, cosf(Ang2) * X41, Y41, sinf(Ang2) * X41, C41R, C41G, C41B);
+  graph_plot_sint(2, cosf(Ang1) * X51, Y51, sinf(Ang1) * X51, C51R, C51G, C51B);
+  graph_plot_sint(2, cosf(Ang3) * X51, Y51, sinf(Ang3) * X51, C51R, C51G, C51B);
+  graph_plot_sint(2, cosf(Ang2) * X41, Y41, sinf(Ang2) * X41, C41R, C41G, C41B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) * X41, Y41, sinf(Ang4) * X41, C41R, C41G, C41B);
-  graph_triangle(2);
-
-  graph_plot_int(2, cosf(Ang1) * X52, Y52, sinf(Ang1) * X52, C52R, C52G, C52B);
-  graph_plot_int(2, cosf(Ang3) * X52, Y52, sinf(Ang3) * X52, C52R, C52G, C52B);
-  graph_plot_int(2, cosf(Ang2) * X42, Y42, sinf(Ang2) * X42, C42R, C42G, C42B);
-  graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) * X42, Y42, sinf(Ang4) * X42, C42R, C42G, C42B);
+  graph_plot_sint(2, cosf(Ang4) * X41, Y41, sinf(Ang4) * X41, C41R, C41G, C41B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang4) * X41, Y41, sinf(Ang4) * X41, C41R, C41G, C41B);
-  graph_plot_int(2, cosf(Ang2) * X41, Y41, sinf(Ang2) * X41, C41R, C41G, C41B);
-  graph_plot_int(2, cosf(Ang3) * X31, Y31, sinf(Ang3) * X31, C31R, C31G, C31B);
+  graph_plot_sint(2, cosf(Ang1) * X52, Y52, sinf(Ang1) * X52, C52R, C52G, C52B);
+  graph_plot_sint(2, cosf(Ang3) * X52, Y52, sinf(Ang3) * X52, C52R, C52G, C52B);
+  graph_plot_sint(2, cosf(Ang2) * X42, Y42, sinf(Ang2) * X42, C42R, C42G, C42B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang1) * X31, Y31, sinf(Ang1) * X31, C31R, C31G, C31B);
-  graph_triangle(2);
-
-  graph_plot_int(2, cosf(Ang4) * X42, Y42, sinf(Ang4) * X42, C42R, C42G, C42B);
-  graph_plot_int(2, cosf(Ang2) * X42, Y42, sinf(Ang2) * X42, C42R, C42G, C42B);
-  graph_plot_int(2, cosf(Ang3) * X32, Y32, sinf(Ang3) * X32, C32R, C32G, C32B);
-  graph_triangle(2);
-  graph_plot_int(2, cosf(Ang1) * X32, Y32, sinf(Ang1) * X32, C32R, C32G, C32B);
+  graph_plot_sint(2, cosf(Ang4) * X42, Y42, sinf(Ang4) * X42, C42R, C42G, C42B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang1) * X31, Y31, sinf(Ang1) * X31, C31R, C31G, C31B);
-  graph_plot_int(2, cosf(Ang3) * X31, Y31, sinf(Ang3) * X31, C31R, C31G, C31B);
-  graph_plot_int(2, cosf(Ang2) * X21, Y21, sinf(Ang2) * X21, C21R, C21G, C21B);
+  graph_plot_sint(2, cosf(Ang4) * X41, Y41, sinf(Ang4) * X41, C41R, C41G, C41B);
+  graph_plot_sint(2, cosf(Ang2) * X41, Y41, sinf(Ang2) * X41, C41R, C41G, C41B);
+  graph_plot_sint(2, cosf(Ang3) * X31, Y31, sinf(Ang3) * X31, C31R, C31G, C31B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) * X21, Y21, sinf(Ang4) * X21, C21R, C21G, C21B);
-  graph_triangle(2);
-
-  graph_plot_int(2, cosf(Ang1) * X32, Y32, sinf(Ang1) * X32, C32R, C32G, C32B);
-  graph_plot_int(2, cosf(Ang3) * X32, Y32, sinf(Ang3) * X32, C32R, C32G, C32B);
-  graph_plot_int(2, cosf(Ang2) * X22, Y22, sinf(Ang2) * X22, C22R, C22G, C22B);
-  graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) * X22, Y22, sinf(Ang4) * X22, C22R, C22G, C22B);
+  graph_plot_sint(2, cosf(Ang1) * X31, Y31, sinf(Ang1) * X31, C31R, C31G, C31B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang4) * X21, Y21, sinf(Ang4) * X21, C21R, C21G, C21B);
-  graph_plot_int(2, cosf(Ang2) * X21, Y21, sinf(Ang2) * X21, C21R, C21G, C21B);
-  graph_plot_int(2, cosf(Ang3) * X11, Y11, sinf(Ang3) * X11, C11R, C11G, C11B);
+  graph_plot_sint(2, cosf(Ang4) * X42, Y42, sinf(Ang4) * X42, C42R, C42G, C42B);
+  graph_plot_sint(2, cosf(Ang2) * X42, Y42, sinf(Ang2) * X42, C42R, C42G, C42B);
+  graph_plot_sint(2, cosf(Ang3) * X32, Y32, sinf(Ang3) * X32, C32R, C32G, C32B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang1) * X11, Y11, sinf(Ang1) * X11, C11R, C11G, C11B);
-  graph_triangle(2);
-
-  graph_plot_int(2, cosf(Ang4) * X22, Y22, sinf(Ang4) * X22, C22R, C22G, C22B);
-  graph_plot_int(2, cosf(Ang2) * X22, Y22, sinf(Ang2) * X22, C22R, C22G, C22B);
-  graph_plot_int(2, cosf(Ang3) * X12, Y12, sinf(Ang3) * X12, C12R, C12G, C12B);
-  graph_triangle(2);
-  graph_plot_int(2, cosf(Ang1) * X12, Y12, sinf(Ang1) * X12, C12R, C12G, C12B);
+  graph_plot_sint(2, cosf(Ang1) * X32, Y32, sinf(Ang1) * X32, C32R, C32G, C32B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang1) * X11, Y11, sinf(Ang1) * X11, C11R, C11G, C11B);
-  graph_plot_int(2, cosf(Ang3) * X11, Y11, sinf(Ang3) * X11, C11R, C11G, C11B);
-  graph_plot_int(2, cosf(Ang2) *   H,   0, sinf(Ang2) *   H, C00R, C00G, C00B);
+  graph_plot_sint(2, cosf(Ang1) * X31, Y31, sinf(Ang1) * X31, C31R, C31G, C31B);
+  graph_plot_sint(2, cosf(Ang3) * X31, Y31, sinf(Ang3) * X31, C31R, C31G, C31B);
+  graph_plot_sint(2, cosf(Ang2) * X21, Y21, sinf(Ang2) * X21, C21R, C21G, C21B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) *   H,   0, sinf(Ang4) *   H, C00R, C00G, C00B);
+  graph_plot_sint(2, cosf(Ang4) * X21, Y21, sinf(Ang4) * X21, C21R, C21G, C21B);
   graph_triangle(2);
 
-  graph_plot_int(2, cosf(Ang1) * X12, Y12, sinf(Ang1) * X12, C12R, C12G, C12B);
-  graph_plot_int(2, cosf(Ang3) * X12, Y12, sinf(Ang3) * X12, C12R, C12G, C12B);
-  graph_plot_int(2, cosf(Ang2) *   H,   0, sinf(Ang2) *   H, C00R, C00G, C00B);
+  graph_plot_sint(2, cosf(Ang1) * X32, Y32, sinf(Ang1) * X32, C32R, C32G, C32B);
+  graph_plot_sint(2, cosf(Ang3) * X32, Y32, sinf(Ang3) * X32, C32R, C32G, C32B);
+  graph_plot_sint(2, cosf(Ang2) * X22, Y22, sinf(Ang2) * X22, C22R, C22G, C22B);
   graph_triangle(2);
-  graph_plot_int(2, cosf(Ang4) *   H,   0, sinf(Ang4) *   H, C00R, C00G, C00B);
+  graph_plot_sint(2, cosf(Ang4) * X22, Y22, sinf(Ang4) * X22, C22R, C22G, C22B);
+  graph_triangle(2);
+
+  graph_plot_sint(2, cosf(Ang4) * X21, Y21, sinf(Ang4) * X21, C21R, C21G, C21B);
+  graph_plot_sint(2, cosf(Ang2) * X21, Y21, sinf(Ang2) * X21, C21R, C21G, C21B);
+  graph_plot_sint(2, cosf(Ang3) * X11, Y11, sinf(Ang3) * X11, C11R, C11G, C11B);
+  graph_triangle(2);
+  graph_plot_sint(2, cosf(Ang1) * X11, Y11, sinf(Ang1) * X11, C11R, C11G, C11B);
+  graph_triangle(2);
+
+  graph_plot_sint(2, cosf(Ang4) * X22, Y22, sinf(Ang4) * X22, C22R, C22G, C22B);
+  graph_plot_sint(2, cosf(Ang2) * X22, Y22, sinf(Ang2) * X22, C22R, C22G, C22B);
+  graph_plot_sint(2, cosf(Ang3) * X12, Y12, sinf(Ang3) * X12, C12R, C12G, C12B);
+  graph_triangle(2);
+  graph_plot_sint(2, cosf(Ang1) * X12, Y12, sinf(Ang1) * X12, C12R, C12G, C12B);
+  graph_triangle(2);
+
+  graph_plot_sint(2, cosf(Ang1) * X11, Y11, sinf(Ang1) * X11, C11R, C11G, C11B);
+  graph_plot_sint(2, cosf(Ang3) * X11, Y11, sinf(Ang3) * X11, C11R, C11G, C11B);
+  graph_plot_sint(2, cosf(Ang2) *   H,   0, sinf(Ang2) *   H, C00R, C00G, C00B);
+  graph_triangle(2);
+  graph_plot_sint(2, cosf(Ang4) *   H,   0, sinf(Ang4) *   H, C00R, C00G, C00B);
+  graph_triangle(2);
+
+  graph_plot_sint(2, cosf(Ang1) * X12, Y12, sinf(Ang1) * X12, C12R, C12G, C12B);
+  graph_plot_sint(2, cosf(Ang3) * X12, Y12, sinf(Ang3) * X12, C12R, C12G, C12B);
+  graph_plot_sint(2, cosf(Ang2) *   H,   0, sinf(Ang2) *   H, C00R, C00G, C00B);
+  graph_triangle(2);
+  graph_plot_sint(2, cosf(Ang4) *   H,   0, sinf(Ang4) *   H, C00R, C00G, C00B);
   graph_triangle(2);
  }
 

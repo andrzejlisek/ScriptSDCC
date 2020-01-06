@@ -1,4 +1,4 @@
-# ScriptSDCC 2.0
+# ScriptSDCC 3.0
 
 ## Description and general purpose
 ScriptSDCC is machine code interpreter compatible with MCS51 and Z180 architectures. It uses 64kB code and data memory, which can be common or separated, but on Z80/Z180 architecture, separated  memory is not usable, because Z80/Z180 processor is not designed to work on separated data and program memory.
@@ -45,7 +45,7 @@ The macros can be used to write one code, which can be used on several configura
 During compilation, if source file or library file is without path, the file will be searched in following paths:
 1. Project path if project is saved.
 2. Source code file path if this path is specified with source file name.
-4. Library path.
+4. Library paths.
 
 Path existence is determined by detecting &quot;/&quot; or &quot;\\&quot; character in file name. ScriptSDCC will try the first case, the next following cases will be tryed only if previous case fails. If file is not copied, compilation process will not invoked and appropriate message will be in __Compiler messages__ on the __Compile and run__ tab. After compilation, if compile is not successful, on the __Compile and run__ tab, there are compiler error and warning messages in __Compiler messages__ field. If compile is successful, the field __Compiler messages__ is blank.
 
@@ -166,7 +166,7 @@ The cast of two cases theoretically can occur, but in most cases, it signals err
 
 ## Compiled code patching
 Directly after compilation, there is applied some patch in beginning of memory to ensure correctly script execution.
-* __MCS51__ - There are written three bytes from  &quot;0000&quot; to &quot;0002&quot; to ensure jump to program beginning. The first byte is always &quot;02&quot; (jump operation code) and the next two bytes are the code location beginning address in big endian order. Practically, the 0002 byte is always &quot;00&quot;.
+* __MCS51__ - There are written three bytes from &quot;0000&quot; to &quot;0002&quot; to ensure jump to program beginning. The first byte is always &quot;02&quot; (jump operation code) and the next two bytes are the code location beginning address in big endian order. Practically, the 0002 byte is always &quot;00&quot;.
 * __Z180__ - There are written two bytes to &quot;0101&quot; and &quot;0102&quot;. These bytes is the stack pointer just after program beginning in little endian order. Practically, the first byte is always &quot;00&quot;. Without the patch, the stack for data will be begin always from &quot;FFFF&quot;.
 
 ## Project management
@@ -182,14 +182,14 @@ Project can be saved to file. In file, there will be saved all parameters from _
 At the first run, you have to set settings on the __Settings__ tab. These settings are following:
 * __Timer interval__ - Time in milliseconds between two refreshes. To take effect of changing this value, you have to restart SDCCScript.
 * __SDCC command__ - Set SDCC compiler invocation command. This setting usually can be &quot;sdcc&quot;, but in certain installations, you have to input this command with full path.
-* __Library directory__ - Path to directory, which contains files, which can be included as library (mentioned in __Library files__ field on __Script__ tab).
+* __Library directories__ - Paths to directories, which contains files, which can be included as library (mentioned in __Library files__ field on __Script__ tab). You can write more than one path separated by end of line character or &quot;|&quot; character.
 * __Temporary directory__ - Path to directory with read and write permission, which is used during compilation. Before compilation, all files placed in temporary directory will be removed.
 * __Console font__ - Font name and size used to display text in console window.
 * __Spreadsheet font__ - Font name and size used to display text in spreadsheet window.
 * __Graph font file__ - Bitmap file containing font, which is used in text rendering in graph window.
 
 ## Graph font file
-The font file, which can be used for labels in Graph, is a bitmap file. The bitmap width must be a multiplier of 256, the bitmap height has nor constraint. The font is monospaced font, which consists of 256 glyphs, the Unicode or similar standards are not supported. The pixels can be white and black, but the color is detected based on color brightness in picture. To get 8x8 font, you have to prepare picture 2048 pixels width and 8 pixels height. If picture is not valid, the labels will not displayed.
+The font file, which can be used for labels in Graph, is a bitmap file. The bitmap width must be a multiplier of 256 plus 8 (for example 2056 pixels for character width 8 pixels), the bitmap height must be multiplier of font height. The font is monospaced font, which consists of some of Unicode pages. The first 8 pixels contains binary code for page and the each pixel represents of bit in the binary representation number of the page. The code must be painted across whole line and the line height must be constant for all defined pages. The pixels can be white and black, but the color is detected based on color brightness in picture. If picture is not valid, the labels will not be displayed. If the painted text contains characters in not included pages, the characters will not be displayed. The example property prepared font is in the &quot;font.png&quot; file, which should be placed in the same directore, where is the compiled ScriptSDCC executable file.
 
 ## Default project template
 You can create default template, which will used for new projects. To create this, tou can have to save current project as &quot;default.sdc&quot; and plate it in application directory. After this, if you start ScriptSDCC or create new project using __New__ button, this file will be loaded, but project will be treated as new, unsaved project.
@@ -199,3 +199,6 @@ ScriptSDCC is prepared for Windows and Linux using Qt5 library and project is cr
 To deploy in Windows, you have to use windeployqt.exe supplied with Qt library.
 To deploy in Linux, you have to use &quot;linuxdeployqt-continuous-x86_64.AppImage&quot; from https://github.com/probonopd/linuxdeployqt/releases.
 After deploying, application should run on another machine, without Qt preinstalled.
+
+## Programming API
+Do wrote own script, you can use supplied API consisting of C headers. The details are described in &quot;readme.txt&quot;.

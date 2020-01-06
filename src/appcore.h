@@ -30,7 +30,7 @@ public:
     MemBuffer * MemBuffer_;
 
     GraphFont * GraphFont_;
-    string GraphFontFile;
+    string GraphFontFile = "font.png";
 
     string ConsoleFontName = "Courier New";
     int ConsoleFontSize = 12;
@@ -64,7 +64,7 @@ public:
 
     string BundleFileName = "";
 
-    void Compile();
+    void Compile(bool CompileCode);
 };
 
 #endif // APPCORE_H

@@ -12,8 +12,8 @@ void main()
  uint I;
 
  console_clear(0);
- print_string(0, "Input file names in Spreadsheet 0 and continue script");
- print_line(0);
+ console_print_string(0, "Input file names in Spreadsheet 0 and continue script");
+ console_print_line(0);
 
  sheet_clear_whole(1);
  cell_set_string(0, 0, 0, "Input file:");
@@ -22,17 +22,17 @@ void main()
  cell_set_string(0, 1, 1, "out.txt");
  stop();
  cell_get_string(0, 0, 1, Buf, 1024);
- print_string(0, "Input file: ");
- print_string(0, Buf);
- print_line(0);
+ console_print_string(0, "Input file: ");
+ console_print_string(0, Buf);
+ console_print_line(0);
  if (file_open_read(0, Buf))
  {
   FileSize = file_size(0);
-  print_string(0, "File loaded");
-  print_line(0);
-  print_string(0, "File size: ");
-  print_ulong(0, FileSize);
-  print_line(0);
+  console_print_string(0, "File loaded");
+  console_print_line(0);
+  console_print_string(0, "File size: ");
+  console_print_ulong(0, FileSize);
+  console_print_line(0);
   if (FileSize > 1024)
   {
    FileSize = 1024;
@@ -57,26 +57,26 @@ void main()
   }
   buffer_set(1, 0, (ushort)Buf, FileSize);
   cell_get_string(0, 1, 1, Buf, 1024);
-  print_string(0, "Output file: ");
-  print_string(0, Buf);
-  print_line(0);
+  console_print_string(0, "Output file: ");
+  console_print_string(0, Buf);
+  console_print_line(0);
   if (file_open_write(1, Buf))
   {
    file_write(1, 1, 0, FileSize);
    file_close(1);
-   print_string(0, "File saved");
-   print_line(0);
+   console_print_string(0, "File saved");
+   console_print_line(0);
   }
   else
   {
-   print_string(0, "Error in file saving");
-   print_line(0);
+   console_print_string(0, "Error in file saving");
+   console_print_line(0);
   }
  }
  else
  {
-  print_string(0, "Error in file loading");
-  print_line(0);
+  console_print_string(0, "Error in file loading");
+  console_print_line(0);
  }
  end();
 }

@@ -9,6 +9,6 @@
 
 #define abs_(X) ((X) >= 0 ? (X) : (0 - (X)))
 
-#define equal_(A, B, Delta) ((((A) < (B)) && (((B) - (A)) <= (Delta))) ? 1 : ((((A) > (B)) && (((A) - (B)) <= (Delta))) ? 1 : 0))
+#define equal_(A, B, T) ((((A) < (B)) && (((B) - (A)) <= (T))) ? 1 : ((((A) > (B)) && (((A) - (B)) <= (T))) ? 1 : 0))
 
 #define roundf_(V) (((V) < 0) ? ceilf((V) - 0.5) : floorf((V) + 0.5))

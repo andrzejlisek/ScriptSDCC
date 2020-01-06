@@ -25,6 +25,7 @@ void ProjectItem::Init()
     ProgFileSrc = "";
     ProgFileBin = "";
     ViewCmd = "";
+    ProgCode = "";
 
     BtnCompile = true;
     BtnReset = false;
@@ -74,14 +75,8 @@ void ProjectItem::ProgAbort()
 
 void ProjectItem::ProgCompile()
 {
+    ProgCode = "";
     CompileMsg = "";
-    CompileGood = false;
-
-    if (SM != NULL)
-    {
-        DEL(ScriptMachine, SM);
-        SM = NULL;
-    }
 
     // Creating source code directory
     string ProgDir = GetFilePath(ProgFileSrc);
@@ -115,9 +110,26 @@ void ProjectItem::ProgCompile()
                 CopyOK = FileCopy(ProgDir + LibFilesX[I], TempDir);
             }
 
-            if ((!CopyOK) && (LibDir != ""))
+            string LibDir_ = LibDir + "|";
+            string DirBuf = "";
+            for (uint II = 0; II < LibDir_.size(); II++)
             {
-                CopyOK = FileCopy(LibDir + LibFilesX[I], TempDir);
+                if ((LibDir_[II] != '|') && (LibDir_[II] != '\r') && (LibDir_[II] != '\n') && (LibDir_[II] != '\t'))
+                {
+                    DirBuf = DirBuf + LibDir_[II];
+                }
+                else
+                {
+                    if (DirBuf != "")
+                    {
+                        if (!CopyOK)
+                        {
+                            string LibDirFile = Eden::CorrectDir(DirBuf) + LibFilesX[I];
+                            CopyOK = FileCopy(LibDirFile, TempDir);
+                        }
+                        DirBuf = "";
+                    }
+                }
             }
         }
 
@@ -129,6 +141,9 @@ void ProjectItem::ProgCompile()
 
     if (CompileMsg != "")
     {
+        // Clearing temporary directory
+        ClearTemp();
+
         return;
     }
 
@@ -160,7 +175,7 @@ void ProjectItem::ProgCompile()
         F1 << "cd " << TempDir << endl;
         F1 << ProgCmd << " " << CompileCommandX << " \"" << GetFileName(ProgFileSrc) << "\"" << " >Log.msg 2>&1" << endl;
         F1.close();
-        SysRun(TempDir + "compile.bat");
+        SysRun(TempDir + "compile.bat", true);
     #endif
     #ifdef Q_OS_LINUX
         fstream F1(TempDir + "compile", ios::out);
@@ -169,19 +184,8 @@ void ProjectItem::ProgCompile()
         F1 << ProgCmd << " " << CompileCommandX << " \"" << GetFileName(ProgFileSrc) << "\"" << " >Log.msg 2>&1" << endl;
         F1.close();
         SysRun("chmod +x " + TempDir + "compile");
-        SysRun(TempDir + "compile");
+        SysRun(TempDir + "compile", true);
     #endif
-
-    // Loading compiled script
-    if (Eden::FileExists(TempDir + ProgFileBin))
-    {
-        switch (Engine)
-        {
-            case 0: SM = NEW(ScriptMachine, ScriptMachineMCS51()); break;
-            case 1: SM = NEW(ScriptMachine, ScriptMachineZ180()); break;
-        }
-        CompileGood = true;
-    }
 
     // Loading compiler messages
     CompileMsg = "";
@@ -193,29 +197,179 @@ void ProjectItem::ProgCompile()
         CompileMsg = CompileMsgX.str();
         F2.close();
     }
+
+    string FileName = TempDir + ProgFileBin;
+    ProgCode = "";
+    if (Eden::FileExists(FileName))
+    {
+        // Patching compiled script file according to defined CODE and DATA spaces
+        int FileSize = Eden::FileSize(FileName);
+
+        fstream FX0(FileName, ios::in | ios::binary);
+        if (FX0.is_open())
+        {
+            char * FileRaw = NEWARR(char, char[FileSize + 100]);
+            FX0.read(FileRaw, FileSize);
+            FX0.close();
+            int Char13 = 0;
+            int Char10 = 0;
+            int I = 0;
+            for (I = 0; I < FileSize; I++)
+            {
+                if (FileRaw[I] == 13) { Char13++; }
+                if (FileRaw[I] == 10) { Char10++; }
+            }
+
+            FileSize--;
+            while ((FileSize > 0) && (FileRaw[FileSize] != ':'))
+            {
+                FileSize--;
+            }
+
+            // Writing the patch
+            string Buf;
+            switch (Engine)
+            {
+                case 0:
+                    FileRaw[FileSize] = ':'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '3'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '2'; FileSize++;
+
+                    Buf = Eden::IntToHex8(CodeLoc_);
+                    FileRaw[FileSize] = Buf[0]; FileSize++;
+                    FileRaw[FileSize] = Buf[1]; FileSize++;
+
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+
+                    Buf = Eden::IntToHex8(256 - ((5 + CodeLoc_) & 255));
+                    FileRaw[FileSize] = Buf[0]; FileSize++;
+                    FileRaw[FileSize] = Buf[1]; FileSize++;
+                    break;
+                case 1:
+                    FileRaw[FileSize] = ':'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '2'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '1'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '1'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+
+                    FileRaw[FileSize] = '0'; FileSize++;
+                    FileRaw[FileSize] = '0'; FileSize++;
+
+                    Buf = Eden::IntToHex8((DataLoc_ + DataSize) & 255);
+                    FileRaw[FileSize] = Buf[0]; FileSize++;
+                    FileRaw[FileSize] = Buf[1]; FileSize++;
+
+                    Buf = Eden::IntToHex8(256 - ((5 + DataLoc_ + DataSize) & 255));
+                    FileRaw[FileSize] = Buf[0]; FileSize++;
+                    FileRaw[FileSize] = Buf[1]; FileSize++;
+                    break;
+            }
+
+            if ((Engine == 0) || (Engine == 1))
+            {
+                if (Char13 > 1) { FileRaw[FileSize] = '\r'; FileSize++; }
+                if (Char10 > 1) { FileRaw[FileSize] = '\n'; FileSize++; }
+            }
+
+            // Writing :00000001FF
+            FileRaw[FileSize] = ':'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '0'; FileSize++;
+            FileRaw[FileSize] = '1'; FileSize++;
+            FileRaw[FileSize] = 'F'; FileSize++;
+            FileRaw[FileSize] = 'F'; FileSize++;
+            if (Char13 > 1) { FileRaw[FileSize] = '\r'; FileSize++; }
+            if (Char10 > 1) { FileRaw[FileSize] = '\n'; FileSize++; }
+
+            stringstream ProgCodeS;
+            for (I = 0; I < FileSize; I++)
+            {
+                if ((FileRaw[I] > 32) && (FileRaw[I] < 127))
+                {
+                    ProgCodeS << FileRaw[I];
+                }
+            }
+
+            DELARR(char, FileRaw);
+
+            ProgCode = ProgCodeS.str();
+        }
+    }
+
+    // Clearing temporary directory
+    ClearTemp();
 }
 
-void ProjectItem::ProgCompileAfter()
+void ProjectItem::ProgLoadCode()
 {
-    if (CompileGood)
+    if (SM != NULL)
     {
-        SM->SwapPage = SwapPage << 8;
-        SM->PrepareProgram(MemMode, TempDir + ProgFileBin, Engine, CodeLoc_, CodeSize, DataLoc_, DataSize);
+        DEL(ScriptMachine, SM);
+        SM = NULL;
+    }
+    switch (Engine)
+    {
+        case 0: SM = NEW(ScriptMachine, ScriptMachineMCS51()); break;
+        case 1: SM = NEW(ScriptMachine, ScriptMachineZ180()); break;
+    }
+    SM->SwapPage = SwapPage << 8;
+    SM->LoadProgram(MemMode, ProgCode, CodeLoc_, CodeSize, DataLoc_, DataSize);
+    if (ProgCode != "")
+    {
+        BtnRun = true;
+        BtnReset = true;
+    }
+    else
+    {
+        BtnRun = false;
+        BtnReset = false;
     }
 }
 
-void ProjectItem::SysRun(string Cmd)
+void ProjectItem::SysRun_(string Cmd)
 {
     system(Cmd.c_str());
+}
+
+void ProjectItem::SysRun(string Cmd, bool Modal)
+{
+    if (Modal)
+    {
+        SysRun_(Cmd);
+    }
+    else
+    {
+        thread Thr(ProjectItem::SysRun_, this, Cmd);
+        Thr.detach();
+    }
 }
 
 void ProjectItem::ClearTemp()
 {
     #ifdef Q_OS_WIN
-        SysRun("del /q " + TempDir + "*.*");
+        SysRun("del /q " + TempDir + "*.*", true);
     #endif
     #ifdef Q_OS_LINUX
-        SysRun("rm -f " + TempDir + "*");
+        SysRun("rm -f " + TempDir + "*", true);
     #endif
 }
 

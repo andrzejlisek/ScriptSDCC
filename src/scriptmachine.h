@@ -49,7 +49,7 @@ public:
     int DataSize;
     void PrepareMem(int Mode);
 
-    void PrepareProgram(int Mode_, string FileName, int Arch_, int CodeLoc_, int CodeSize_, int DataLoc_, int DataSize_);
+    void LoadProgram(int Mode_, string &ProgCode, int CodeLoc_, int CodeSize_, int DataLoc_, int DataSize_);
 
 
     stringstream TextBuff;

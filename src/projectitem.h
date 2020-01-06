@@ -2,6 +2,7 @@
 #define PROJECTITEM_H
 
 #include <string>
+#include <thread>
 #include "scriptmachine.h"
 #include "scriptmachinemcs51.h"
 #include "scriptmachinez180.h"
@@ -22,9 +23,8 @@ public:
     void ProgRun();
     void ProgAbort();
     void ProgReset();
-    bool CompileGood = false;
     void ProgCompile();
-    void ProgCompileAfter();
+    void ProgLoadCode();
 
     int Engine = 0;
     int MemMode = 0;
@@ -37,6 +37,7 @@ public:
     string ProgFileBin = "";
     string ProgCmd = "sdcc";
     string ViewCmd = "";
+    string ProgCode = "";
 
     bool BtnCompile = true;
     bool BtnReset = false;
@@ -52,11 +53,12 @@ public:
     string CompileMsg = "";
 
     void Init();
+    void SysRun(string Cmd, bool Modal);
 
 private:
+    void SysRun_(string Cmd);
     bool FileCopy(string SrcFile, string DstDir);
     void ClearTemp();
-    void SysRun(string Cmd);
     string GetFilePath(string FileName);
     string GetFileName(string FileName);
 };

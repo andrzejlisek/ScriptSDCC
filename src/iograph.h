@@ -5,6 +5,7 @@
 #include "eden.h"
 #include <queue>
 #include "graphfont.h"
+#include <mutex>
 
 using namespace std;
 
@@ -83,6 +84,7 @@ public:
     void TextSet(double X, double Y, double Z, int X0, int Y0);
     void TextPrint(string Text);
 private:
+    mutex MTX;
     bool Changed = false;
     uchar CurrentThread = 0;
     DimensionType ThreadX[256];

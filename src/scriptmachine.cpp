@@ -28,7 +28,7 @@ void ScriptMachine::PrepareMem(int Mode)
     }
 }
 
-void ScriptMachine::PrepareProgram(int Mode_, string FileName, int Engine_, int CodeLoc_, int CodeSize_, int DataLoc_, int DataSize_)
+void ScriptMachine::LoadProgram(int Mode_, string &ProgCode, int CodeLoc_, int CodeSize_, int DataLoc_, int DataSize_)
 {
     CodeLoc = CodeLoc_;
     CodeSize = CodeSize_;
@@ -38,70 +38,60 @@ void ScriptMachine::PrepareProgram(int Mode_, string FileName, int Engine_, int 
     // Preparing memory
     PrepareMem(Mode_);
 
-    // Loading compiled script file
-    fstream FX(FileName, ios::in);
-    string Buf = ":0000000000";
-    if (FX.is_open())
+    // Clearing memory
+    int I;
+    for (I = 0; I < 65536; I++)
     {
-        // Clearing memory
-        int I;
-        for (I = 0; I < 65536; I++)
-        {
-            MemProg[I] = 0;
-            MemData[I] = 0;
-            MemMapP[I] = 0;
-            MemMapR[I] = 0;
-            MemMapW[I] = 0;
-            MemMapC[I] = 0;
-        }
+        MemProg[I] = 0;
+        MemData[I] = 0;
+        MemMapP[I] = 0;
+        MemMapR[I] = 0;
+        MemMapW[I] = 0;
+        MemMapC[I] = 0;
+    }
 
-        // Reading file line by line
-        while (Buf.substr(7, 2) == "00")
+    // Loading compiled code
+    int ProgCodeI = 0;
+    int ProgCodeL = ProgCode.size();
+    for (ProgCodeI = 0; ProgCodeI <= ProgCodeL; ProgCodeI++)
+    {
+        if (ProgCode[ProgCodeI] == ':')
         {
-            getline(FX, Buf);
-            if (Buf.substr(7, 2) == "00")
+            // Get binary code line
+            int ProgCodeII = ProgCodeI + 1;
+            while ((ProgCodeII < ProgCodeL) && (ProgCode[ProgCodeII] != ':'))
             {
-                // Number of bytes
-                int DataLength = Eden::HexToInt(Buf.substr(1, 2));
+                ProgCodeII++;
+            }
+            string Buf = ProgCode.substr(ProgCodeI, ProgCodeII - ProgCodeI);
 
-                // First byte address
-                int DataAddr = Eden::HexToInt(Buf.substr(3, 4));
-
-                // Writing bytes into CODE memory
-                for (I = 0; I < DataLength; I++)
+            if (Buf.size() > 11)
+            {
+                if (Buf.substr(7, 2) == "00")
                 {
-                    MemMapP[DataAddr + I] = 1;
-                    MemProg[DataAddr + I] = Eden::HexToInt(Buf.substr(I * 2 + 9, 2));
+                    // Number of bytes
+                    int DataLength = Eden::HexToInt(Buf.substr(1, 2));
+
+                    // First byte address
+                    int DataAddr = Eden::HexToInt(Buf.substr(3, 4));
+
+                    // Writing bytes into CODE memory
+                    for (I = 0; I < DataLength; I++)
+                    {
+                        MemMapP[DataAddr + I] = 1;
+                        MemProg[DataAddr + I] = Eden::HexToInt(Buf.substr(I * 2 + 9, 2));
+                    }
                 }
             }
         }
-        FX.close();
     }
 
-
-    // Patching compiled code against to defined CODE and DATA spaces
-    switch (Engine_)
-    {
-        case 0:
-            MemProg[0x0000] = 0x02;
-            MemMapP[0x0000] = 1;
-            MemProg[0x0001] = CodeLoc_;
-            MemMapP[0x0001] = 1;
-            MemProg[0x0002] = 0x00;
-            MemMapP[0x0002] = 1;
-            break;
-        case 1:
-            MemProg[0x0101] = 0x00;
-            MemMapP[0x0101] = 1;
-            MemProg[0x0102] = DataLoc_ + DataSize_;
-            MemMapP[0x0102] = 1;
-            break;
-    }
 
     // Saving memory dump to file
+    /*cout << ">>>>" << FileName << endl;
     fstream FXXX(FileName + ".bin", ios::out | ios::binary);
     FXXX.write((char*)MemProg, 65536);
-    FXXX.close();
+    FXXX.close();*/
 
     // Resetting
     ProgReset();

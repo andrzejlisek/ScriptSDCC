@@ -7,17 +7,30 @@
 
 // Integer number type one-word names
 #define uchar unsigned char
+#define schar signed char
 #define uint unsigned int
+#define sint signed int
 #define ulong unsigned long
+#define slong signed long
 #define ushort unsigned short
+#define sshort signed short
 #define llong long long
 #define ullong unsigned long long
+#define sllong signed long long
 
 // Arrays giving absolute data memory access
-#define _uchar ((uchar volatile *)0)
 #define _char ((char volatile *)0)
-#define _uint ((uint volatile *)0)
+#define _uchar ((uchar volatile *)0)
+#define _schar ((schar volatile *)0)
+#define _short ((short volatile *)0)
+#define _ushort ((ushort volatile *)0)
+#define _sshort ((sshort volatile *)0)
 #define _int ((int volatile *)0)
+#define _uint ((uint volatile *)0)
+#define _sint ((sint volatile *)0)
+#define _long ((long volatile *)0)
+#define _ulong ((ulong volatile *)0)
+#define _slong ((slong volatile *)0)
 
 // Replacement for MCS51-specified keywords to "mem_near" and "mem_far", which can be used also on Z180
 #ifdef engine_z180
@@ -32,15 +45,15 @@
 // Union for every data type, which is used to set and get values in swap memory
 _far __at (mem_swap + 8) union core_io_union
 {
- char RawS[8];
+ schar RawS[8];
  uchar RawU[8];
- char BufS1;
+ schar BufS1;
  uchar BufU1;
- short BufS2;
+ sshort BufS2;
  ushort BufU2;
- int BufS2x;
+ sint BufS2x;
  uint BufU2x;
- long BufS4;
+ slong BufS4;
  ulong BufU4;
  float BufF;
 } core_io;

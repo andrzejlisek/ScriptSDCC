@@ -13,6 +13,7 @@ IOGraph::~IOGraph()
 
 void IOGraph::Clear()
 {
+    MTX.lock();
     GraphDef.clear();
 
     TextColorR = 255;
@@ -39,10 +40,12 @@ void IOGraph::Clear()
     CurrentThread = 0;
     Changed = true;
     NeedRedraw = true;
+    MTX.unlock();
 }
 
 void IOGraph::Plot(double X, double Y, double Z, uchar R, uchar G, uchar B)
 {
+    MTX.lock();
     PlotDef PD;
     PD.X = X;
     PD.Y = Y;
@@ -82,14 +85,17 @@ void IOGraph::Plot(double X, double Y, double Z, uchar R, uchar G, uchar B)
         ThreadB[CurrentThread] = B;
     }
     Changed = true;
+    MTX.unlock();
 }
 
 void IOGraph::Line(int L)
 {
+    MTX.lock();
     int I = GraphDef.size();
     int I0 = I - 1;
     if (I <= L)
     {
+        MTX.unlock();
         return;
     }
     while (L > 0)
@@ -116,13 +122,16 @@ void IOGraph::Line(int L)
     {
         NeedRedrawLast = I0;
     }
+    MTX.unlock();
 }
 
 void IOGraph::Triangle()
 {
+    MTX.lock();
     int I = GraphDef.size();
     if (I < 3)
     {
+        MTX.unlock();
         return;
     }
     I--;
@@ -172,34 +181,45 @@ void IOGraph::Triangle()
     {
         NeedRedrawLast = I0;
     }
+    MTX.unlock();
 }
 
 bool IOGraph::IsChanged()
 {
-    return Changed;
+    MTX.lock();
+    bool C = Changed;
+    MTX.unlock();
+    return C;
 }
 
 void IOGraph::ThreadSet(uchar Thr)
 {
+    MTX.lock();
     CurrentThread = Thr;
+    MTX.unlock();
 }
 
 void IOGraph::ThreadReset()
 {
+    MTX.lock();
     ThreadS[CurrentThread] = 0;
+    MTX.unlock();
 }
 
 void IOGraph::TextSet(double X, double Y, double Z, int X0, int Y0)
 {
+    MTX.lock();
     Text_X = X;
     Text_Y = Y;
     Text_Z = Z;
     Text_X0 = X0;
     Text_Y0 = Y0;
+    MTX.unlock();
 }
 
 void IOGraph::TextPrint(string Text)
 {
+    MTX.lock();
     PlotDef PD;
     PD.X = Text_X;
     PD.Y = Text_Y;
@@ -219,4 +239,5 @@ void IOGraph::TextPrint(string Text)
     PD.TextX = Text_X0 - (PD.TextLen * GraphFont_->FontW / 2);
     PD.TextY = 0 - Text_Y0 - (GraphFont_->FontH / 2);
     GraphDef.push_back(PD);
+    MTX.unlock();
 }
