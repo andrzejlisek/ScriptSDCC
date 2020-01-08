@@ -90,7 +90,7 @@ void printHelp()
  console_print_line(0);
  console_print_string(0, "   Spaces are ignored, letters are case insensitive");
  console_print_line(0);
- console_print_string(0, "   Unary functions: SIN, COS, TAN, CTG, SEC, CSC");
+ console_print_string(0, "   Unary functions: SIN, COS, TAN, COT, SEC, CSC");
  console_print_line(0);
  console_print_string(0, "   Binary functions: EXP, ROOT");
  console_print_line(0);
@@ -242,10 +242,10 @@ void CalcWork(uchar Test, uchar Op)
      numTan(NumStack[NumStackI - 1], NumStack[NumStackI]);
      numCopy(NumStack[NumStackI], NumStack[NumStackI - 1]);
     }
-    if (TokenCompare("CTG"))
+    if (TokenCompare("COT"))
     {
      StackErr = 0;
-     numCtg(NumStack[NumStackI - 1], NumStack[NumStackI]);
+     numCot(NumStack[NumStackI - 1], NumStack[NumStackI]);
      numCopy(NumStack[NumStackI], NumStack[NumStackI - 1]);
     }
     if (TokenCompare("SEC"))

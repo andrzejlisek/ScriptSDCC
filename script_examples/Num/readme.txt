@@ -5,13 +5,13 @@ The library are the files mentioned below, for almost each file there are listed
 
 numdef.h - Parameter value definition. This is configuration file, where programmer can affect the featuses such as the maximum number value, the variable types, which are used etc.
 numcore.h - The main core file.
+ void numInit() - Core initialization - it must be performed before any operation, once in whole program
  void numZero(numPtr(N)) - Set 0 as number value
  void numCopy(numPtr(NI), numPtr(NO)) - Copy number value from NI to NO
  void numSignSet(numPtr(N), numByte S) - Set the number value sign (0 - positive, 1 - negative)
  numByte numSignGet(numPtr(N)) - Get the number value sign
  numSignGetAbs(numPtr(N)) - Get the number value sign and remove sign (convert to absolute value)
  numSignGetInv(numPtr(N) - Get the number value sign and invert sign
- void numInit() - Core initialization - it must be performed before any operation, once in whole program
 numbase.h - The base number operations
  numByte numCompare(numPtr(N1), numPtr(N2)) - Number compare (N1<N2 ==> -1; N1=N2 ==> 0; N1>N2 ==> 1)
  void numAdd(numPtr(N1), numPtr(N2), numPtr(N3)) - Number add (N3=N1+N2)
@@ -24,13 +24,13 @@ numio.h - Convert between number value and text to input or output number value
  void numSetArray(numPtr(N), numElementType * NumA, numElementType Weight, numIOArrayIterator ElementCount) - Set number value based on array
  numByte numGetArray(numPtr(N), numElementType * NumA, numElementType Weight, numIOArrayIterator Count) - Read number sign and absolute value into array
 numtaylor.h - Functions using Taylor series
+ void numInitTaylor() - Structure initialization - it must be performed before any operation using Taylor serie, once in whole program
  void numSin(numPtr(Arg), numPtr(Val)) - Sine (Val=sin(Arg))
  void numCos(numPtr(Arg), numPtr(Val)) - Cosine (Val=cos(Arg))
  void numTan(numPtr(Arg), numPtr(Val)) - Tangent (Val=tan(Arg)=sin(Arg)/cos(Arg))
- void numCtg(numPtr(Arg), numPtr(Val)) - Cotangent (Val=ctg(Arg)=cos(Arg)/sin(Arg))
+ void numCot(numPtr(Arg), numPtr(Val)) - Cotangent (Val=cot(Arg)=cos(Arg)/sin(Arg))
  void numSec(numPtr(Arg), numPtr(Val)) - Secant (Val=sec(Arg)=1/cos(Arg))
  void numCsc(numPtr(Arg), numPtr(Val)) - Cosecant (Val=csc(Arg)=1/sin(Arg))
- void numInitTaylor() - Structure initialization - it must be performed before any operation using Taylor serie, once in whole program
 numround.h - Rounding numbers and multiply/divide by multiply of 10
  void numMul10(numPtr(N), numIteratorSignedType I) - Multiply number by 10^I (I > 0)
  void numDiv10(numPtr(N), numIteratorSignedType I) - Divide number by 10^I (I > 0)

@@ -68,7 +68,7 @@ void numTan(numPtr(Arg), numPtr(Val))
 }
 
 // Cotangent as cosine divided by sine
-void numCtg(numPtr(Arg), numPtr(Val))
+void numCot(numPtr(Arg), numPtr(Val))
 {
  numDef(NSin);
  numDef(NCos);
