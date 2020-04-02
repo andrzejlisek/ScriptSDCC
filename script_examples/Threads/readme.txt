@@ -1,4 +1,4 @@
-This example demonstrates he bundle feature and concurrency executing.
+This example demonstrates the bundle feature and concurrency executing.
 
 To use it, load the "thread1.sdc" file into item 0 of bundle and load the "thread2.sdc" into intem 1 of bundle.
 
