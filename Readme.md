@@ -201,4 +201,4 @@ To deploy in Linux, you have to use &quot;linuxdeployqt-continuous-x86_64.AppIma
 After deploying, application should run on another machine, without Qt preinstalled.
 
 ## Programming API
-Do wrote own script, you can use supplied API consisting of C headers. The details are described in &quot;readme.txt&quot;.
+To write own script, you can use supplied API consisting of C headers. The details are described in &quot;readme.txt&quot;.
